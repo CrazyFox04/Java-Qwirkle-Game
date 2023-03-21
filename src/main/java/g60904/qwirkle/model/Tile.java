@@ -1,7 +1,5 @@
 package g60904.qwirkle.model;
 
-import java.io.Serializable;
-
 /**
  * A record that represents a tile in a Qwirkle game, consisting of a color and a shape.
  * <p>
