@@ -12,7 +12,7 @@ public class Bag implements Serializable {
     /**
      * List of tiles in the bag.
      */
-    private List<Tile> tiles = new ArrayList<Tile>();
+    private final List<Tile> tiles = new ArrayList<Tile>();
     /**
      * Serial version ID for serialization.
      */
