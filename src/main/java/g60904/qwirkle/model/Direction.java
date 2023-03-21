@@ -4,31 +4,12 @@ package g60904.qwirkle.model;
  * An enum representing the four cardinal directions: UP, DOWN, LEFT, RIGHT.
  * Each direction is associated with a deltaRow and deltaCol, which can be used to
  * represent the movement in the respective direction on a two-dimensional grid.
+ * The columns decrease as you go down and the rows as you go to the left.
  */
 public enum Direction {
-    /**
-     * The UP direction, associated with a deltaRow of -1 and a deltaCol of 0.
-     */
-    UP(-1, 0),
-    /**
-     * The DOWN direction, associated with a deltaRow of 1 and a deltaCol of 0.
-     */
-    DOWN(1, 0),
-    /**
-     * The LEFT direction, associated with a deltaRow of 0 and a deltaCol of -1.
-     */
-    LEFT(0, -1),
-    /**
-     * The RIGHT direction, associated with a deltaRow of 0 and a deltaCol of 1.
-     */
-    RIGHT(0, +1);
-    /**
-     * The deltaRow associated with this direction.
-     */
+    UP(-1, 0), DOWN(1, 0),
+    LEFT(0, -1), RIGHT(0, 1);
     final int deltaRow;
-    /**
-     * The deltaCol associated with this direction.
-     */
     final int deltaCol;
 
     /**
@@ -43,18 +24,26 @@ public enum Direction {
     }
 
     /**
-     * Returns the deltaRow associated with this Direction.
+     * Returns the change in row index associated with this Direction.
+     * <p>
+     * The change in row index, also known as the "delta row", specifies how much the row index
+     * should be adjusted when moving in this direction. A negative delta row means moving up, while a
+     * positive delta row means moving down.
      *
-     * @return the deltaRow associated with this Direction
+     * @return the delta row associated with this Direction
      */
     public int getDeltaRow() {
         return deltaRow;
     }
 
     /**
-     * Returns the deltaCol associated with this Direction.
+     * Returns the change in col index associated with this Direction.
+     * <p>
+     * The change in col index, also known as the "delta col", specifies how much the col index
+     * should be adjusted when moving in this direction. A negative delta col means moving left, while a
+     * positive delta row means moving right.
      *
-     * @return the deltaCol associated with this Direction
+     * @return the delta col associated with this Direction
      */
     public int getDeltaCol() {
         return deltaCol;

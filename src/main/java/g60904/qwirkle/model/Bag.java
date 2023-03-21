@@ -9,13 +9,7 @@ import java.util.List;
  * created. The bag contains tiles with different colors and shapes. The tiles can be randomly drawn from the bag.
  */
 public class Bag implements Serializable {
-    /**
-     * List of tiles in the bag.
-     */
     private final List<Tile> tiles = new ArrayList<>();
-    /**
-     * Serial version ID for serialization.
-     */
     @Serial
     private static final long serialVersionUID = 362004;
 

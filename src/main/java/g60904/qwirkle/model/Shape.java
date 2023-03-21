@@ -1,7 +1,9 @@
 package g60904.qwirkle.model;
 
 /**
- * Shape represent shape of tile.
+ * An enumeration of shapes that can be used to represent tiles on a Qwirkle Game.
+ *
+ * @see Tile
  */
 public enum Shape {
     CROSS, SQUARE, ROUND, STAR, PLUS, DIAMOND;
