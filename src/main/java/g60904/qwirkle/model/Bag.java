@@ -1,6 +1,5 @@
 package g60904.qwirkle.model;
 
-import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,10 +7,9 @@ import java.util.List;
  * This class represents a bag of tiles used for a game. It is implemented as a Singleton and can only have one instance
  * created. The bag contains tiles with different colors and shapes. The tiles can be randomly drawn from the bag.
  */
-public class Bag implements Serializable {
+public class Bag {
     private final List<Tile> tiles = new ArrayList<>();
-    @Serial
-    private static final long serialVersionUID = 362004;
+    private static final Bag instance = new Bag();
 
     /**
      * Private constructor used to create the tiles in the bag.
@@ -22,13 +20,6 @@ public class Bag implements Serializable {
                 createNextThreeTiles(color, shape);
             }
         }
-    }
-
-    /**
-     * Static inner class used to implement Singleton pattern.
-     */
-    private static class bagSingletonCreator {
-        private static final Bag instance = new Bag();
     }
 
     /**
@@ -48,18 +39,8 @@ public class Bag implements Serializable {
      *
      * @return the singleton instance of the Bag class.
      */
-    public Bag getInstance() {
-        return bagSingletonCreator.instance;
-    }
-
-    /**
-     * Ensures that the instance is the same after deserialization.
-     *
-     * @return the instance of the Bag class.
-     */
-    @Serial
-    private Object readResolve() {
-        return getInstance();
+    public static Bag getInstance() {
+        return instance;
     }
 
     /**
@@ -101,37 +82,5 @@ public class Bag implements Serializable {
      */
     public int size() {
         return tiles.size();
-    }
-
-    /**
-     * Main method used for testing the Bag class.
-     * Is just an example of serialization. Will be removed in the future
-     * TODO : remove it !!!
-     *
-     * @param args command-line arguments.
-     * @throws FileNotFoundException  if the file cannot be found.
-     * @throws IOException            if an I/O error occurs.
-     * @throws ClassNotFoundException if the class cannot be found during deserialization.
-     */
-    public static void main(String[] args) throws FileNotFoundException, IOException, ClassNotFoundException {
-        var myFirstInstance = new Bag().getInstance();
-        ObjectOutput out = new ObjectOutputStream(new FileOutputStream(
-                "bagOfTile.ser"
-        ));
-        out.writeObject(myFirstInstance);
-        System.out.println(myFirstInstance.tiles.toString());
-        out.close();
-        var aTest = new Bag().getInstance();
-        // deserialization
-        ObjectInput in = new ObjectInputStream(new FileInputStream(
-                "bagOfTile.ser"
-        ));
-        var mySecondInstance = (Bag) in.readObject();
-        mySecondInstance.tiles.remove(2);
-        System.out.println(myFirstInstance.tiles.toString());
-        in.close();
-
-        System.out.println("myFirstInstance hashcode = " + myFirstInstance.hashCode());
-        System.out.println("mySecondInstance hashcode = " + mySecondInstance.hashCode());
     }
 }

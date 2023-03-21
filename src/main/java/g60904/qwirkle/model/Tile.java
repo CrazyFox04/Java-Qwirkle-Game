@@ -9,13 +9,10 @@ import java.io.Serializable;
  * The color and shape are represented as instances of the {@link Color} and {@link Shape} enums,
  * respectively.
  * <p>
- * This class implements the {@link Serializable} interface, which allows instances of this
- * class to be serialized and deserialized for storage of the bag of tiles from which to draw.
- * <p>
  * This class is a {@link Record}.
  *
  * @param color the color of the tile
  * @param shape the shape of the tile
  */
-public record Tile(Color color, Shape shape) implements Serializable {
+public record Tile(Color color, Shape shape) {
 }
