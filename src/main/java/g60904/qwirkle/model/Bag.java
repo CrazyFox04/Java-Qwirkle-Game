@@ -53,7 +53,7 @@ public class Bag {
     public Tile[] getRandomTiles(int n) {
         var returnedTile = new Tile[n];
         for (int i = 0; i < n; i++) {
-            int randomIndex = getRandomNumber(0, size());
+            int randomIndex = getRandomNumber(size());
             returnedTile[i] = tiles.get(randomIndex);
             tiles.remove(randomIndex);
         }
@@ -63,16 +63,11 @@ public class Bag {
     /**
      * Returns a random integer between the specified minimum (inclusive) and maximum (inclusive) values.
      *
-     * @param min the minimum value to be included in the range
      * @param max the maximum value to be included in the range
      * @return a random integer between the specified minimum (inclusive) and maximum (inclusive) values
-     * @throws IllegalArgumentException if min is greater than max
      */
-    private int getRandomNumber(int min, int max) throws RuntimeException {
-        if (min > max) {
-            throw new RuntimeException("The minimum value can't be greater than the maximum");
-        }
-        return min + (int) (Math.random() * ((max - min) + 1));
+    private int getRandomNumber(int max) {
+        return (int) (Math.random() * (max + 1));
     }
 
     /**
