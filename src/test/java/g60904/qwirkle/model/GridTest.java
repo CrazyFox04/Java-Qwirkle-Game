@@ -141,8 +141,7 @@ class GridTest {
     @Test
     void addTest_LeftATile_SameShape() {
         addSomeTiles_FirstAdd();
-        myGrid.add(45, 42, new Tile(Color.GREEN, Shape.DIAMOND));
-        assertEquals(myGrid.get(45, 42), new Tile(Color.GREEN, Shape.DIAMOND));
+        assertThrows(QwirkleException.class, () -> myGrid.add(45, 42, new Tile(Color.GREEN, Shape.DIAMOND)));
     }
 
     @Test

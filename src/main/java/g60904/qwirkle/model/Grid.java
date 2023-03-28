@@ -1,9 +1,11 @@
 package g60904.qwirkle.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -78,124 +80,48 @@ public class Grid {
         var tileLeft = get(row, col - 1);
         if (tileUp == null && tileRight == null && tileDown == null && tileLeft == null) {
             throw new QwirkleException("The Tile cannot be placed where there is none");
-        } else return checkLineVert(tile, row, col) && checkLineHor(tile, row, col);
+        } else return
+                checkLines(
+                        checkLine(tile, row, col, Direction.UP),
+                        checkLine(tile, row, col, Direction.DOWN)
+                ) && checkLines(
+                        checkLine(tile, row, col, Direction.LEFT),
+                        checkLine(tile, row, col, Direction.RIGHT)
+                );
     }
 
-    private List<Object> getLine(Function<Tile, Object> which, Direction direction, int row, int col) {
-        var nextTile = tiles[row += direction.getDeltaRow()][col += direction.getDeltaCol()];
+    private List<Object> getLine(Function<Tile, Object> which, Direction d, int row, int col) {
+        var nextTile = tiles[row += d.getDeltaRow()][col += d.getDeltaCol()];
         ArrayList<Object> resultList = new ArrayList<>();
         if (nextTile == null) {
             return new ArrayList<>();
         }
         while (nextTile != null) {
             resultList.add(which.apply(nextTile));
-            nextTile = tiles[row += direction.getDeltaRow()][col += direction.getDeltaCol()];
+            nextTile = tiles[row += d.getDeltaRow()][col += d.getDeltaCol()];
         }
         return resultList;
     }
 
-    private static Color color(Tile tile) {
-        return tile.color();
-    }
-
-    private List<Color> getLine_Color(Direction direction, int row, int col) {
-        var nextTile = tiles[row += direction.getDeltaRow()][col += direction.getDeltaCol()];
-        var resultList = new ArrayList<Color>();
-        if (nextTile == null) {
-            return new ArrayList<>();
-        }
-        while (nextTile != null) {
-            resultList.add(nextTile.color());
-            nextTile = tiles[row += direction.getDeltaRow()][col += direction.getDeltaCol()];
-        }
-        return resultList;
-    }
-
-    private List<Shape> getLine_Shape(Direction direction, int row, int col) {
-        var nextTile = tiles[row += direction.getDeltaRow()][col += direction.getDeltaCol()];
-        var resultList = new ArrayList<Shape>();
-        if (nextTile == null) {
-            return new ArrayList<>();
-        }
-        while (nextTile != null) {
-            resultList.add(nextTile.shape());
-            nextTile = tiles[row += direction.getDeltaRow()][col += direction.getDeltaCol()];
-        }
-        return resultList;
-    }
-
-    private boolean checkLineVert(Tile tile, int row, int col) {
-        var tileUp = tiles[row + Direction.UP.getDeltaRow()][col + Direction.UP.getDeltaCol()];
-        var tileDown = tiles[row + Direction.DOWN.getDeltaRow()][col + Direction.UP.getDeltaCol()];
-        if (tileUp == null && tileDown == null) {
-            return true;
-        }
-        if ((tileUp != null && tile.color() == tileUp.color()) ||
-                (tileDown != null && tile.color() == tileDown.color())) {
-            List<Object> shapeListUp = new ArrayList<>();
-            List<Object> shapeListDown = new ArrayList<>();
-            if (tileUp != null && tile.color() == tileUp.color()) {
-                shapeListUp = getLine(Tile::shape, Direction.UP, row, col);
-            }
-            if (tileDown != null && tile.color() == tileDown.color()) {
-                shapeListDown = getLine(Tile::shape, Direction.DOWN, row, col);
-            }
-            var colorList = Stream.concat(shapeListUp.stream(), shapeListDown.stream()).toList();
-            var distinctSet = new HashSet<>(colorList);
-            return colorList.size() == distinctSet.size();
-        } else if ((tileUp != null && tile.shape() == tileUp.shape()) ||
-                (tileDown != null && tile.shape() == tileDown.shape())) {
-            List<Object> colorListUp = new ArrayList<>();
-            List<Object> colorListDown = new ArrayList<>();
-            if (tileUp != null && tile.shape() == tileUp.shape()) {
-                colorListUp = getLine(Tile::color, Direction.UP, row, col);
-            }
-            if (tileDown != null && tile.color() == tileDown.color()) {
-                colorListDown = getLine(Tile::color, Direction.DOWN, row, col);
-            }
-            var colorList = Stream.concat(colorListUp.stream(), colorListDown.stream()).toList();
-            var distinctSet = new HashSet<>(colorList);
-            return colorList.size() == distinctSet.size();
+    private List<Object> checkLine(Tile tile, int row, int col, Direction d) {
+        List<Object> list = new ArrayList<>();
+        var tileInD = tiles[row + d.getDeltaRow()][col + d.getDeltaCol()];
+        if (tileInD != null && tile.color() == tileInD.color()) {
+            list.addAll(getLine(Tile::shape, d, row, col));
+        } else if (tileInD != null && tile.shape() == tileInD.shape()) {
+            list.addAll(getLine(Tile::color, d, row, col));
+        } else if (tileInD == null) {
+            return list;
         } else {
-            return false;
+            throw new QwirkleException("Tile can't be placed");
         }
+        return list;
     }
 
-    private boolean checkLineHor(Tile tile, int row, int col) {
-        var tileLeft = tiles[row + Direction.LEFT.getDeltaRow()][col + Direction.LEFT.getDeltaCol()];
-        var tileRight = tiles[row + Direction.RIGHT.getDeltaRow()][col + Direction.RIGHT.getDeltaCol()];
-        if (tileLeft == null && tileRight == null) {
-            return true;
-        }
-        if ((tileLeft != null && tile.color() == tileLeft.color()) ||
-                (tileRight != null && tile.color() == tileRight.color())) {
-            List<Object> shapeListLeft = new ArrayList<>();
-            List<Object> ShapeListRight = new ArrayList<>();
-            if (tileLeft != null && tile.color() == tileLeft.color()) {
-                shapeListLeft = getLine(Tile::shape, Direction.LEFT, row, col);
-            }
-            if (tileRight != null && tile.color() == tileRight.color()) {
-                ShapeListRight = getLine(Tile::shape, Direction.RIGHT, row, col);
-            }
-            var colorList = Stream.concat(shapeListLeft.stream(), ShapeListRight.stream()).toList();
-            var distinctSet = new HashSet<>(colorList);
-            return colorList.size() == distinctSet.size();
-        } else if ((tileLeft != null && tile.shape() == tileLeft.shape()) ||
-                (tileRight != null && tile.shape() == tileRight.shape())) {
-            List<Object> colorListLeft = new ArrayList<>();
-            List<Object> colorListRight = new ArrayList<>();
-            if (tileLeft != null && tile.shape() == tileLeft.shape()) {
-                colorListLeft = getLine(Tile::color, Direction.LEFT, row, col);
-            }
-            if (tileRight != null && tile.color() == tileRight.color()) {
-                colorListRight = getLine(Tile::color, Direction.RIGHT, row, col);
-            }
-            var colorList = Stream.concat(colorListLeft.stream(), colorListRight.stream()).toList();
-            var distinctSet = new HashSet<>(colorList);
-            return colorList.size() == distinctSet.size();
-        } else {
-            return false;
-        }
+    private boolean checkLines(List<Object> list1, List<Object> list2) {
+        var list = Stream.concat(list1.stream(),list2.stream()).toList();
+        var distinctSet = new HashSet<>(list);
+        return list.size() == distinctSet.size();
     }
 
     private Color getColor(int row, int col) {
