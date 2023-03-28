@@ -9,7 +9,7 @@ package g60904.qwirkle.model;
 public enum Direction {
     UP(-1, 0), DOWN(1, 0),
     LEFT(0, -1), RIGHT(0, 1);
-    final int deltaRow;
+    final int deltaRow;// todo : make it private !!!
     final int deltaCol;
 
     /**
