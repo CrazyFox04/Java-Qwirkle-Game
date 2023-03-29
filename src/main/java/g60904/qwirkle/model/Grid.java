@@ -120,11 +120,10 @@ public class Grid {
     }
 
     private boolean surroundingsAreNull(int row, int col) {
-        for (Direction d : Direction.values()) {
-            if (get(row + d.deltaRow, col + d.deltaCol) != null) {
-                return true;
-            }
-        }
+        return get(row - 1, col) == null &&
+                get(row, col + 1) == null &&
+                get(row + 1, col) == null &&
+                get(row, col - 1) == null;
     }
 
     /**
