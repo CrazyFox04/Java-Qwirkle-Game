@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -72,11 +73,7 @@ public class Grid {
     }
 
     private boolean checkNearbyLines(Tile tile, int row, int col) {
-        var tileUp = get(row - 1, col);
-        var tileRight = get(row, col + 1);
-        var tileDown = get(row + 1, col);
-        var tileLeft = get(row, col - 1);
-        if (tileUp == null && tileRight == null && tileDown == null && tileLeft == null) {
+        if (surroundingsAreNull(row, col)) {
             throw new QwirkleException("The Tile cannot be placed where there is none");
         } else return
                 checkRedundantTiles(
@@ -120,6 +117,13 @@ public class Grid {
         var list = Stream.concat(tilesInDir1.stream(), tilesInDir2.stream()).toList();
         var distinctSet = new HashSet<>(list);
         return list.size() == distinctSet.size();
+    }
+
+    private boolean surroundingsAreNull(int row, int col) {
+        return get(row - 1, col) == null &&
+                get(row, col + 1) == null &&
+                get(row + 1, col) == null &&
+                get(row, col - 1) == null;
     }
 
     /**
