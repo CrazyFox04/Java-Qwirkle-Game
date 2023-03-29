@@ -1,11 +1,9 @@
 package g60904.qwirkle.model;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -119,29 +117,9 @@ public class Grid {
     }
 
     private boolean checkLines(List<Object> list1, List<Object> list2) {
-        var list = Stream.concat(list1.stream(),list2.stream()).toList();
+        var list = Stream.concat(list1.stream(), list2.stream()).toList();
         var distinctSet = new HashSet<>(list);
         return list.size() == distinctSet.size();
-    }
-
-    private Color getColor(int row, int col) {
-        try {
-            return tiles[row][col].color();
-        } catch (NullPointerException e) {
-            return null;
-        }
-    }
-
-    private Shape getShape(int row, int col) {
-        try {
-            return tiles[row][col].shape();
-        } catch (NullPointerException e) {
-            return null;
-        }
-    }
-
-    private boolean checkShape(Shape shape, int row, int col) {
-        return false;
     }
 
     /**
