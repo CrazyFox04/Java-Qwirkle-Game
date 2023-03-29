@@ -64,14 +64,14 @@ public class Grid {
         if (tiles[row][col] != null) {
             throw new QwirkleException("This position (" + row + ", " + col + ") already contain a tile");
         }
-        if (checkNeighboringLines(tile, row, col)) {
+        if (checkNearbyLines(tile, row, col)) {
             tiles[row][col] = tile;
         } else {
             throw new QwirkleException("Exception not handled - Grid:72");
         }
     }
 
-    private boolean checkNeighboringLines(Tile tile, int row, int col) {
+    private boolean checkNearbyLines(Tile tile, int row, int col) {
         var tileUp = get(row - 1, col);
         var tileRight = get(row, col + 1);
         var tileDown = get(row + 1, col);
@@ -79,16 +79,16 @@ public class Grid {
         if (tileUp == null && tileRight == null && tileDown == null && tileLeft == null) {
             throw new QwirkleException("The Tile cannot be placed where there is none");
         } else return
-                checkLines(
-                        checkLine(tile, row, col, Direction.UP),
-                        checkLine(tile, row, col, Direction.DOWN)
-                ) && checkLines(
-                        checkLine(tile, row, col, Direction.LEFT),
-                        checkLine(tile, row, col, Direction.RIGHT)
+                checkRedundantTiles(
+                        checkLineInDirection(tile, row, col, Direction.UP),
+                        checkLineInDirection(tile, row, col, Direction.DOWN)
+                ) && checkRedundantTiles(
+                        checkLineInDirection(tile, row, col, Direction.LEFT),
+                        checkLineInDirection(tile, row, col, Direction.RIGHT)
                 );
     }
 
-    private List<Object> getLine(Function<Tile, Object> which, Direction d, int row, int col) {
+    private List<Object> getLineInDirection(Function<Tile, Object> which, Direction d, int row, int col) {
         var nextTile = tiles[row += d.getDeltaRow()][col += d.getDeltaCol()];
         ArrayList<Object> resultList = new ArrayList<>();
         if (nextTile == null) {
@@ -101,13 +101,13 @@ public class Grid {
         return resultList;
     }
 
-    private List<Object> checkLine(Tile tile, int row, int col, Direction d) {
+    private List<Object> checkLineInDirection(Tile tile, int row, int col, Direction d) {
         List<Object> list = new ArrayList<>();
         var tileInD = tiles[row + d.getDeltaRow()][col + d.getDeltaCol()];
         if (tileInD != null && tile.color() == tileInD.color()) {
-            list.addAll(getLine(Tile::shape, d, row, col));
+            list.addAll(getLineInDirection(Tile::shape, d, row, col));
         } else if (tileInD != null && tile.shape() == tileInD.shape()) {
-            list.addAll(getLine(Tile::color, d, row, col));
+            list.addAll(getLineInDirection(Tile::color, d, row, col));
         } else if (tileInD == null) {
             return list;
         } else {
@@ -116,8 +116,8 @@ public class Grid {
         return list;
     }
 
-    private boolean checkLines(List<Object> list1, List<Object> list2) {
-        var list = Stream.concat(list1.stream(), list2.stream()).toList();
+    private boolean checkRedundantTiles(List<Object> tilesInDir1, List<Object> tilesInDir2) {
+        var list = Stream.concat(tilesInDir1.stream(), tilesInDir2.stream()).toList();
         var distinctSet = new HashSet<>(list);
         return list.size() == distinctSet.size();
     }
