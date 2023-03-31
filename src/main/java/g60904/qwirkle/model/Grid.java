@@ -67,13 +67,15 @@ public class Grid {
         if (checkNearbyLines(tile, row, col)) {
             tiles[row][col] = tile;
         } else {
-            throw new QwirkleException("Exception not handled - Grid:72");
+            throw new QwirkleException("The position (" + row + ", " + col + ") " +
+                    "cannot accept the Tile (" + tile.shape() + " " + tile.color() + ").");
         }
     }
 
     private boolean checkNearbyLines(Tile tile, int row, int col) {
         if (surroundingsAreNull(row, col)) {
-            throw new QwirkleException("The Tile cannot be placed where there is none");
+            throw new QwirkleException("The Tile (" + row + ", " + col + ") cannot be placed " +
+                    "where there is no Tile yet");
         } else return
                 checkRedundantTiles(
                         checkLineInDirection(tile, row, col, Direction.UP),
@@ -107,7 +109,8 @@ public class Grid {
         } else if (tileInD == null) {
             return list;
         } else {
-            throw new QwirkleException("Tile can't be placed");
+            throw new QwirkleException("In the direction '" + d + "' the Tile " +
+                    "(" + tile.shape() + tile.color() + ") doesn't have a matching color or shape");
         }
         return list;
     }
