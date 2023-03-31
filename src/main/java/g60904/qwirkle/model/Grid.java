@@ -60,6 +60,16 @@ public class Grid {
 
     }
 
+    /**
+     * Adds a tile to the specified position on the game board.
+     *
+     * @param row  The row index of the position where the tile is to be added.
+     * @param col  The column index of the position where the tile is to be added.
+     * @param tile The tile to be added to the game board.
+     * @throws QwirkleException if the position already contains a tile or if the specified
+     *                          position cannot accept the tile due to the neighboring tiles'
+     *                          attributes not matching with the given tile.
+     */
     public void add(int row, int col, Tile tile) throws QwirkleException {
         if (tiles[row][col] != null) {
             throw new QwirkleException("This position (" + row + ", " + col + ") already contain a tile");
@@ -72,6 +82,17 @@ public class Grid {
         }
     }
 
+    /**
+     * Checks if the neighboring tiles of the specified position match the attributes of the given tile
+     * in all four directions: up, down, left, and right.
+     *
+     * @param tile The tile to be checked for attribute matching.
+     * @param row  The row index of the position whose neighboring tiles are to be checked.
+     * @param col  The column index of the position whose neighboring tiles are to be checked.
+     * @return {@code true} if the neighboring tiles' attributes match with the given tile in all
+     * four directions; {@code false} otherwise.
+     * @throws QwirkleException if the position does not have any neighboring tiles.
+     */
     private boolean checkNearbyLines(Tile tile, int row, int col) {
         if (surroundingsAreNull(row, col)) {
             throw new QwirkleException("The Tile (" + row + ", " + col + ") cannot be placed " +
@@ -86,6 +107,18 @@ public class Grid {
                 );
     }
 
+    /**
+     * Returns a list of objects that are obtained by applying the specified function to the
+     * tiles in a line in a particular direction starting from the specified position on the
+     * game board.
+     *
+     * @param which The function that is applied to each tile in the line to obtain an object.
+     * @param d     The direction in which the line is traversed.
+     * @param row   The row index of the starting position.
+     * @param col   The column index of the starting position.
+     * @return A list of objects that are obtained by applying the specified function to the
+     * tiles in a line in the specified direction starting from the specified position.
+     */
     private List<Object> getLineInDirection(Function<Tile, Object> which, Direction d, int row, int col) {
         var nextTile = tiles[row += d.getDeltaRow()][col += d.getDeltaCol()];
         ArrayList<Object> resultList = new ArrayList<>();
@@ -99,6 +132,17 @@ public class Grid {
         return resultList;
     }
 
+    /**
+     * Checks the tiles in a line in the specified direction for a match with the specified tile.
+     * Returns a list of objects, which can either be the shapes or colors of the tiles in the line.
+     *
+     * @param tile the tile to match against
+     * @param row  the row of the tile to match
+     * @param col  the column of the tile to match
+     * @param d    the direction in which to search for a matching tile
+     * @return a list of objects representing either the shapes or colors of the tiles in the line
+     * @throws QwirkleException if there is no matching tile in the line
+     */
     private List<Object> checkLineInDirection(Tile tile, int row, int col, Direction d) {
         List<Object> list = new ArrayList<>();
         var tileInD = tiles[row + d.getDeltaRow()][col + d.getDeltaCol()];
@@ -115,12 +159,27 @@ public class Grid {
         return list;
     }
 
+    /**
+     * Checks if there are any redundant tiles in two lists of tiles obtained by checking the tiles
+     * in two directions for a match with a specified tile.
+     *
+     * @param tilesInDir1 the list of tiles obtained by checking in one direction
+     * @param tilesInDir2 the list of tiles obtained by checking in another direction
+     * @return {@code true} if there are no redundant tiles, {@code false} otherwise
+     */
     private boolean checkRedundantTiles(List<Object> tilesInDir1, List<Object> tilesInDir2) {
         var list = Stream.concat(tilesInDir1.stream(), tilesInDir2.stream()).toList();
         var distinctSet = new HashSet<>(list);
         return list.size() == distinctSet.size();
     }
 
+    /**
+     * Checks if all the surrounding positions of a given position are null.
+     *
+     * @param row the row index of the position to check
+     * @param col the column index of the position to check
+     * @return {@code true} if all surrounding positions are null, {@code false} otherwise
+     */
     private boolean surroundingsAreNull(int row, int col) {
         for (Direction d : Direction.values()) {
             if (get(row + d.getDeltaRow(), col + d.getDeltaCol()) != null) {
@@ -144,7 +203,7 @@ public class Grid {
     /**
      * Returns a boolean value indicating whether the Grid is empty or not.
      *
-     * @return true if the game board is empty; false otherwise
+     * @return {@code true} if the game board is empty; {@code false} otherwise
      */
     public boolean isEmpty() {
         return isEmpty;
