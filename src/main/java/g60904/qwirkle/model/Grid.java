@@ -51,8 +51,8 @@ public class Grid {
         }
         int addCounter = 0;
         for (Tile tile : line) {
-            int rowToAddTile = 45 + addCounter * d.deltaRow;
-            int colToAddTile = 45 + addCounter * d.deltaCol;
+            int rowToAddTile = 45 + addCounter * d.getDeltaRow();
+            int colToAddTile = 45 + addCounter * d.getDeltaCol();
             tiles[rowToAddTile][colToAddTile] = tile;
             addCounter++;
         }
@@ -120,7 +120,7 @@ public class Grid {
 
     private boolean surroundingsAreNull(int row, int col) {
         for (Direction d : Direction.values()) {
-            if (get(row + d.deltaRow, col + d.deltaCol) != null) {
+            if (get(row + d.getDeltaRow(), col + d.getDeltaCol()) != null) {
                 return false;
             }
         }
