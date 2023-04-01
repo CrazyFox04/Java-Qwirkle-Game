@@ -176,4 +176,58 @@ class GridTest {
                 46, 45, new Tile(Color.BLUE, Shape.CROSS)
         ));
     }
+
+    @Test
+    void rules_Sonia_a() {
+        var t1 = new Tile(Color.RED, Shape.ROUND);
+        var t2 = new Tile(Color.RED, Shape.DIAMOND);
+        var t3 = new Tile(Color.RED, Shape.PLUS);
+        myGrid.firstAdd(Direction.UP, t1, t2, t3);
+        assertEquals(t1, myGrid.get(45, 45));
+        assertEquals(t2, myGrid.get(44, 45));
+        assertEquals(t3, myGrid.get(43, 45));
+    }
+
+    @Test
+    void rules_Cedric_b() {
+        rules_Sonia_a();
+        var t1 = new Tile(Color.RED, Shape.SQUARE);
+        var t2 = new Tile(Color.BLUE, Shape.SQUARE);
+        var t3 = new Tile(Color.PURPLE, Shape.SQUARE);
+        myGrid.add(46, 45, Direction.RIGHT, t1, t2, t3);
+        assertEquals(t1, myGrid.get(46, 45));
+        assertEquals(t2, myGrid.get(46, 46));
+        assertEquals(t3, myGrid.get(46, 47));
+    }
+
+    @Test
+    void rules_Elvire_c() {
+        rules_Cedric_b();
+        var t1 = new Tile(Color.BLUE, Shape.ROUND);
+        myGrid.add(45, 46, t1);
+        assertEquals(t1, myGrid.get(45, 46));
+    }
+
+    @Test
+    void rules_Vincent_d() {
+        rules_Elvire_c();
+        var t1 = new Tile(Color.GREEN, Shape.PLUS);
+        var t2 = new Tile(Color.GREEN, Shape.DIAMOND);
+        myGrid.add(43, 44, Direction.DOWN, t1, t2);
+        assertEquals(t1, myGrid.get(43, 44));
+        assertEquals(t2, myGrid.get(44, 44));
+    }
+
+    @Test
+    void rules_sonia_a_adapted_to_fail() {
+        var t1 = new Tile(Color.RED, Shape.ROUND);
+        var t2 = new Tile(Color.RED, Shape.DIAMOND);
+        var t3 = new Tile(Color.RED, Shape.DIAMOND);
+        assertThrows(QwirkleException.class, () -> {
+            myGrid.firstAdd(Direction.UP, t1, t2, t3);
+        });
+        assertNull(myGrid.get(45, 45));
+        assertNull(myGrid.get(44, 45));
+        assertNull(myGrid.get(43, 45));
+    }
 }

@@ -82,6 +82,15 @@ public class Grid {
         }
     }
 
+    public void add(int row, int col, Direction d, Tile... line) {
+        var numberOfTilesPlaced = 0;
+        for (Tile tile : line) {
+            add(row + numberOfTilesPlaced * d.getDeltaRow(),
+                    col + numberOfTilesPlaced * d.getDeltaCol(), tile);
+            numberOfTilesPlaced++;
+        }
+    }
+
     /**
      * Checks if the neighboring tiles of the specified position match the attributes of the given tile
      * in all four directions: up, down, left, and right.
