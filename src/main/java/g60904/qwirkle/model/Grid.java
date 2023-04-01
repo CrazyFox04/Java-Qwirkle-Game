@@ -102,6 +102,20 @@ public class Grid {
     }
 
     /**
+     * Adds a line of tiles to the game board, where each tile is specified by a TileAtPosition object.
+     * The tiles are added in the order specified by the input array.
+     *
+     * @param line an array of TileAtPosition objects representing the line of tiles to be added.
+     * @throws QwirkleException if a tile cannot be added to the specified position on the game board.
+     */
+
+    public void add(TileAtPosition... line) {
+        for (TileAtPosition tile : line) {
+            add(tile.row(), tile.col(), tile.tile());
+        }
+    }
+
+    /**
      * Checks if the neighboring tiles of the specified position match the attributes of the given tile
      * in all four directions: up, down, left, and right.
      *
