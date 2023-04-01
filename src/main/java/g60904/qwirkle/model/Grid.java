@@ -82,6 +82,16 @@ public class Grid {
         }
     }
 
+    /**
+     * Adds a sequence of tiles in a line on the game board starting from a given position in a given direction.
+     *
+     * @param row  the row index of the starting position
+     * @param col  the column index of the starting position
+     * @param d    the direction in which to place the tiles
+     * @param line an array of tiles to place in the line
+     * @throws QwirkleException if any of the tiles cannot be placed on the board or
+     *                          if a position already contains a tile
+     */
     public void add(int row, int col, Direction d, Tile... line) {
         var numberOfTilesPlaced = 0;
         for (Tile tile : line) {
