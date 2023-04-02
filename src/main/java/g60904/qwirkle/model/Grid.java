@@ -10,7 +10,7 @@ import java.util.stream.Stream;
  * The Grid class represents the game board of Qwirkle. It contains a 2D array of Tiles
  * which represents the board tiles and a boolean flag indicating if the grid is empty.
  */
-public class Gridv1 {
+public class Grid {
     private final Tile[][] tiles;
     private boolean isEmpty;
 
@@ -18,7 +18,7 @@ public class Gridv1 {
      * Constructs a new Grid instance with a 91x91 2D array of Tiles and initializes
      * the isEmpty flag to true.
      */
-    public Gridv1() {
+    public Grid() {
         tiles = new Tile[91][91];
         isEmpty = true;
     }
@@ -101,10 +101,16 @@ public class Gridv1 {
                 numberOfTilesPlaced++;
             }
         } catch (QwirkleException e) {
-            removeTilesDueToException(row, col, d, numberOfTilesPlaced);
-            throw new QwirkleException(e.getMessage());
+            remove(row, col, d, numberOfTilesPlaced);
+            String lineType = (d == Direction.LEFT || d == Direction.RIGHT) ? "row" : "column";
+            throw new QwirkleException("The position (" + (row + (numberOfTilesPlaced - 1) * d.getDeltaRow())
+                    + ", " + (col + (numberOfTilesPlaced - 1) * d.getDeltaCol()) +
+                    ") cannot accept the Tile (" + line[numberOfTilesPlaced - 1].shape() + " "
+                    + line[numberOfTilesPlaced - 1].color() + "). All previously placed tiles in this " +
+                    lineType + " have been removed.");
         }
     }
+
 
     /**
      * Adds a line of tiles to the game board, where each tile is specified by a TileAtPosition object.
@@ -254,6 +260,13 @@ public class Gridv1 {
     public Tile get(int row, int col) {
         return tiles[row][col];
     }
+
+    private void remove(int row, int col, Direction d, int numberOfTilesPlaced) {
+        for (int i = numberOfTilesPlaced - 1; i >= 0; i--) {
+            tiles[row + i * d.getDeltaRow()][col + i * d.getDeltaCol()] = null;
+        }
+    }
+
 
     /**
      * Returns a boolean value indicating whether the Grid is empty or not.
