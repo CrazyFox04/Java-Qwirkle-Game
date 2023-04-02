@@ -10,7 +10,7 @@ import java.util.stream.Stream;
  * The Grid class represents the game board of Qwirkle. It contains a 2D array of Tiles
  * which represents the board tiles and a boolean flag indicating if the grid is empty.
  */
-public class Grid {
+public class Gridv1 {
     private final Tile[][] tiles;
     private boolean isEmpty;
 
@@ -18,7 +18,7 @@ public class Grid {
      * Constructs a new Grid instance with a 91x91 2D array of Tiles and initializes
      * the isEmpty flag to true.
      */
-    public Grid() {
+    public Gridv1() {
         tiles = new Tile[91][91];
         isEmpty = true;
     }
@@ -94,10 +94,15 @@ public class Grid {
      */
     public void add(int row, int col, Direction d, Tile... line) {
         var numberOfTilesPlaced = 0;
-        for (Tile tile : line) {
-            add(row + numberOfTilesPlaced * d.getDeltaRow(),
-                    col + numberOfTilesPlaced * d.getDeltaCol(), tile);
-            numberOfTilesPlaced++;
+        try {
+            for (Tile tile : line) {
+                add(row + numberOfTilesPlaced * d.getDeltaRow(),
+                        col + numberOfTilesPlaced * d.getDeltaCol(), tile);
+                numberOfTilesPlaced++;
+            }
+        } catch (QwirkleException e) {
+            removeTilesDueToException(row, col, d, numberOfTilesPlaced);
+            throw new QwirkleException(e.getMessage());
         }
     }
 
@@ -110,8 +115,25 @@ public class Grid {
      */
 
     public void add(TileAtPosition... line) {
-        for (TileAtPosition tile : line) {
-            add(tile.row(), tile.col(), tile.tile());
+        try {
+            for (TileAtPosition tile : line) {
+                add(tile.row(), tile.col(), tile.tile());
+            }
+        } catch (QwirkleException e) {
+            removeTilesDueToException(line);
+            throw new QwirkleException(e.getMessage());
+        }
+    }
+
+    private void removeTilesDueToException(TileAtPosition[] tile) {
+        for (TileAtPosition tileAtPosition : tile) {
+            tiles[tileAtPosition.row()][tileAtPosition.col()] = null;
+        }
+    }
+
+    private void removeTilesDueToException(int row, int col, Direction d, int numOfTilePlaced) {
+        for (int i = 0; i < numOfTilePlaced; i++) {
+            tiles[row + d.getDeltaRow()][col + d.getDeltaCol()] = null;
         }
     }
 
