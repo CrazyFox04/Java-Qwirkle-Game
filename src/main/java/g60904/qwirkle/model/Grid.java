@@ -103,10 +103,10 @@ public class Grid {
         } catch (QwirkleException e) {
             remove(row, col, d, numberOfTilesPlaced);
             String lineType = (d == Direction.LEFT || d == Direction.RIGHT) ? "row" : "column";
-            throw new QwirkleException("The position (" + (row + (numberOfTilesPlaced - 1) * d.getDeltaRow())
-                    + ", " + (col + (numberOfTilesPlaced - 1) * d.getDeltaCol()) +
-                    ") cannot accept the Tile (" + line[numberOfTilesPlaced - 1].shape() + " "
-                    + line[numberOfTilesPlaced - 1].color() + "). All previously placed tiles in this " +
+            throw new QwirkleException("The position (" + (row + (numberOfTilesPlaced) * d.getDeltaRow())
+                    + ", " + (col + (numberOfTilesPlaced) * d.getDeltaCol()) +
+                    ") cannot accept the Tile (" + line[numberOfTilesPlaced].shape() + " "
+                    + line[numberOfTilesPlaced].color() + ").\n All previously placed tiles in this " +
                     lineType + " have been removed.");
         }
     }
@@ -137,12 +137,6 @@ public class Grid {
         }
     }
 
-    private void removeTilesDueToException(int row, int col, Direction d, int numOfTilePlaced) {
-        for (int i = 0; i < numOfTilePlaced; i++) {
-            tiles[row + d.getDeltaRow()][col + d.getDeltaCol()] = null;
-        }
-    }
-
     /**
      * Checks if the neighboring tiles of the specified position match the attributes of the given tile
      * in all four directions: up, down, left, and right.
@@ -161,10 +155,12 @@ public class Grid {
         } else return
                 checkRedundantTiles(
                         checkLineInDirection(tile, row, col, Direction.UP),
-                        checkLineInDirection(tile, row, col, Direction.DOWN)
+                        checkLineInDirection(tile, row, col, Direction.DOWN),
+                        tile
                 ) && checkRedundantTiles(
                         checkLineInDirection(tile, row, col, Direction.LEFT),
-                        checkLineInDirection(tile, row, col, Direction.RIGHT)
+                        checkLineInDirection(tile, row, col, Direction.RIGHT),
+                        tile
                 );
     }
 
@@ -228,7 +224,12 @@ public class Grid {
      * @param tilesInDir2 the list of tiles obtained by checking in another direction
      * @return {@code true} if there are no redundant tiles, {@code false} otherwise
      */
-    private boolean checkRedundantTiles(List<Object> tilesInDir1, List<Object> tilesInDir2) {
+    private boolean checkRedundantTiles(List<Object> tilesInDir1, List<Object> tilesInDir2, Tile tile) {
+        if (!tilesInDir1.isEmpty() && tilesInDir1.get(0) instanceof Shape) {
+            tilesInDir1.add(tile.shape());
+        } else {
+            tilesInDir1.add(tile.color());
+        }
         var list = Stream.concat(tilesInDir1.stream(), tilesInDir2.stream()).toList();
         var distinctSet = new HashSet<>(list);
         return list.size() == distinctSet.size();
