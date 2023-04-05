@@ -154,6 +154,15 @@ public class Game {
     }
 
     /**
+     * Returns the grid of the Qwirkle game.
+     *
+     * @return the grid of the Qwirkle game
+     */
+    public Grid getGrid() {
+        return grid;
+    }
+
+    /**
      * Returns an array of the tiles at the given indexes in the current player's hand.
      *
      * @param is The indexes of the desired tiles in the current player's hand.
