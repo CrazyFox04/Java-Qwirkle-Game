@@ -212,8 +212,4 @@ public class Game {
         players[currentPlayer].remove(getTileOfPlayer(is));
         players[currentPlayer].refill();
     }
-
-    public Grid getGrid() {
-        return grid;
-    }
 }

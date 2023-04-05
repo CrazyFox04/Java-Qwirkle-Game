@@ -7,18 +7,6 @@ import java.util.Collections;
 import java.util.List;
 
 public class View {
-    public static void main(String[] args) {
-        Player player = new Player("Enzo");
-        Game game = new Game(List.of(player));
-        player.refill();
-        List<Tile> hand = game.getCurrentPlayerHand();
-        display(player);
-        displayHelp();
-        game.first(Direction.LEFT, 0);
-        GridView gridView = new GridView(game.getGrid());
-        display(gridView);
-    }
-
     public static void display(GridView grid) {
         var actualLimits = grid.getGridLimits();
         for (int i = actualLimits[2]; i <= actualLimits[0]; i++) {
@@ -62,6 +50,6 @@ public class View {
     }
 
     public static void displayError(String message) {
-        System.out.println(message);
+        System.err.println(message);
     }
 }
