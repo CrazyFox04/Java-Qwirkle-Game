@@ -1,6 +1,7 @@
 package g60904.qwirkle.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.function.Function;
@@ -9,10 +10,15 @@ import java.util.stream.Stream;
 /**
  * The Grid class represents the game board of Qwirkle. It contains a 2D array of Tiles
  * which represents the board tiles and a boolean flag indicating if the grid is empty.
+ * It contains an actualLimits attribute, which is an array of 4 integers representing
+ * the size limits used in the game board. The first element (index 0) indicates the minimum row,
+ * the second element (index 1) indicates the minimum column, the third element (index 2) indicates
+ * the maximum row, and the fourth element (index 3) indicates the maximum column.
  */
 public class Grid {
     private final Tile[][] tiles;
     private boolean isEmpty;
+    private int[] actualLimits;
 
     /**
      * Constructs a new Grid instance with a 91x91 2D array of Tiles and initializes
@@ -21,6 +27,7 @@ public class Grid {
     public Grid() {
         tiles = new Tile[91][91];
         isEmpty = true;
+        actualLimits = new int[]{46, 44, 44, 46};
     }
 
     /**
@@ -56,8 +63,8 @@ public class Grid {
             tiles[rowToAddTile][colToAddTile] = tile;
             addCounter++;
         }
+        modifyLimits(d, line.length, 45, 45);
         isEmpty = false;
-
     }
 
     /**
@@ -76,6 +83,7 @@ public class Grid {
         }
         if (checkNearbyLines(tile, row, col)) {
             tiles[row][col] = tile;
+            modifyLimits(row, col);
         } else {
             throw new QwirkleException("The position (" + row + ", " + col + ") " +
                     "cannot accept the Tile (" + tile.shape() + " " + tile.color() + ").");
@@ -100,6 +108,7 @@ public class Grid {
                         col + numberOfTilesPlaced * d.getDeltaCol(), tile);
                 numberOfTilesPlaced++;
             }
+            modifyLimits(d, line.length, row, col);
         } catch (QwirkleException e) {
             remove(row, col, d, numberOfTilesPlaced);
             String lineType = (d == Direction.LEFT || d == Direction.RIGHT) ? "row" : "column";
@@ -121,12 +130,15 @@ public class Grid {
      */
 
     public void add(TileAtPosition... line) {
+        int[] copyOfLimits = Arrays.copyOf(actualLimits, actualLimits.length);
         try {
             for (TileAtPosition tile : line) {
                 add(tile.row(), tile.col(), tile.tile());
+                modifyLimits(tile.row(), tile.col());
             }
         } catch (QwirkleException e) {
             removeTilesDueToException(line);
+            actualLimits = copyOfLimits;
             throw new QwirkleException(e.getMessage());
         }
     }
@@ -276,5 +288,57 @@ public class Grid {
      */
     public boolean isEmpty() {
         return isEmpty;
+    }
+
+    /**
+     * Returns the actualLimits attribute, which is an array of 4 integers representing
+     * the size limits used in the game board. The first element (index 0) indicates the minimum row,
+     * the second element (index 1) indicates the minimum column, the third element (index 2) indicates
+     * the maximum row, and the fourth element (index 3) indicates the maximum column.
+     *
+     * @return an int array containing the actualLimits of the grid.
+     */
+    public int[] getActualLimits() {
+        return actualLimits;
+    }
+
+    /**
+     * Updates the actualLimits attribute based on the placement of a Tile in a certain direction.
+     * The direction can be UP, DOWN, LEFT, or RIGHT, and the numberPlaced parameter indicates
+     * the number of Tiles placed in that direction. The row and col parameters indicate the
+     * position of the first Tile placed in that direction.
+     *
+     * @param d            the direction of the placement (UP, DOWN, LEFT, or RIGHT).
+     * @param numberPlaced the number of Tiles placed in the specified direction.
+     * @param row          the row of the first Tile placed in the specified direction.
+     * @param col          the column of the first Tile placed in the specified direction.
+     */
+    private void modifyLimits(Direction d, int numberPlaced, int row, int col) {
+        switch (d) {
+            case UP -> actualLimits[2] = Math.min(actualLimits[2], row - numberPlaced);
+            case DOWN -> actualLimits[0] = Math.max(actualLimits[0], row + numberPlaced);
+            case LEFT -> actualLimits[1] = Math.min(actualLimits[1], row - numberPlaced);
+            case RIGHT -> actualLimits[3] = Math.max(actualLimits[0], row + numberPlaced);
+        }
+    }
+
+    /**
+     * Updates the actualLimits attribute based on the placement of a Tile at a specific position.
+     * The row and col parameters indicate the position of the Tile placed.
+     *
+     * @param row the row of the Tile placed.
+     * @param col the column of the Tile placed.
+     */
+    private void modifyLimits(int row, int col) {
+        if (row >= actualLimits[0]) {
+            actualLimits[0]++;
+        } else if (row <= actualLimits[2]) {
+            actualLimits[2]--;
+        }
+        if (col <= actualLimits[1]) {
+            actualLimits[1]--;
+        } else if (col >= actualLimits[3]) {
+            actualLimits[3]++;
+        }
     }
 }

@@ -53,7 +53,7 @@ public class Bag {
     public Tile[] getRandomTiles(int n) {
         var returnedTile = new Tile[n];
         for (int i = 0; i < n; i++) {
-            int randomIndex = getRandomNumber(size());
+            int randomIndex = getRandomNumber(size()-1);
             returnedTile[i] = tiles.get(randomIndex);
             tiles.remove(randomIndex);
         }

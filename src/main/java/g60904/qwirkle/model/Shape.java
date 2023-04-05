@@ -7,4 +7,16 @@ package g60904.qwirkle.model;
  */
 public enum Shape {
     CROSS, SQUARE, ROUND, STAR, PLUS, DIAMOND;
+
+    @Override
+    public String toString() {
+        return switch (this) {
+            case CROSS -> "X";
+            case SQUARE -> "■";
+            case ROUND -> "●";
+            case STAR -> "*";
+            case PLUS -> "+";
+            case DIAMOND -> "♦";
+        };
+    }
 }

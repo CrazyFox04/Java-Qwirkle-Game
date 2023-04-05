@@ -1,5 +1,6 @@
 package g60904.qwirkle.model;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -23,6 +24,7 @@ public class Player {
      */
     public Player(String name) {
         this.name = name;
+        this.tiles = new ArrayList<>();
     }
 
     /**
@@ -47,7 +49,7 @@ public class Player {
      * Refills the player's hand by adding new random tiles from the bag.
      */
     public void refill() {
-        tiles.addAll(List.of(Bag.getInstance().getRandomTiles(tiles.size() - 6)));
+        tiles.addAll(List.of(Bag.getInstance().getRandomTiles(- (tiles.size() - 6))));
     }
 
     /**

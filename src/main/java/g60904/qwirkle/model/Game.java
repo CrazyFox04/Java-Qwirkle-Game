@@ -28,7 +28,10 @@ public class Game {
      */
     public Game(List<Player> listOfPlayers) {
         grid = new Grid();
-        players = (Player[]) Stream.of(listOfPlayers).toArray();
+        players = new Player[listOfPlayers.size()];
+        for (int i = 0; i < listOfPlayers.size(); i++) {
+            players[i] = listOfPlayers.get(i);
+        }
         currentPlayer = 0;
     }
 
@@ -208,5 +211,9 @@ public class Game {
     private void removeTileOfPlayer(int... is) {
         players[currentPlayer].remove(getTileOfPlayer(is));
         players[currentPlayer].refill();
+    }
+
+    public Grid getGrid() {
+        return grid;
     }
 }

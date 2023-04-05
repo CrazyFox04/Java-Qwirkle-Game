@@ -38,4 +38,7 @@ public class GridView {
     public boolean isEmpty() {
         return grid.isEmpty();
     }
+    public int[] getGridLimits() {
+        return grid.getActualLimits();
+    }
 }

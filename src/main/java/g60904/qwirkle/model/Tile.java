@@ -13,4 +13,8 @@ package g60904.qwirkle.model;
  * @param shape the shape of the tile
  */
 public record Tile(Color color, Shape shape) {
+    @Override
+    public String toString() {
+        return color().toString() + shape + "\033[m";
+    }
 }
