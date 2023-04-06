@@ -139,8 +139,7 @@ public class Game {
                 pass();
                 restart = false;
             } catch (QwirkleException e) {
-                System.out.println("Vous ne pouvez pas jouer ces tuiles car " + e.getMessage() +
-                        ".\n Veillez réessayer");
+                throw new QwirkleException(e.getMessage());
             }
         }
     }
@@ -185,6 +184,9 @@ public class Game {
      * @return An array of TileAtPosition objects representing the tiles to be played by the current player.
      */
     private TileAtPosition[] getTileAtPosOfPlayer(int... is) {
+        if (is.length % 3 != 0) {
+            throw new QwirkleException("The number of arguments is incorrect. Please try again.");
+        }
         var tilesAtPos = new TileAtPosition[is.length / 3];
         for (int i = 0; i < is.length / 3; i++) {
             tilesAtPos[i] = new TileAtPosition(

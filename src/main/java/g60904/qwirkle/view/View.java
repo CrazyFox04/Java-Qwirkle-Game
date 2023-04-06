@@ -2,12 +2,17 @@ package g60904.qwirkle.view;
 
 import g60904.qwirkle.model.*;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
 /**
  * The View class provides static methods to display information related to the Qwirkle game.
  * It has methods to display the game board, player's hand, help menu, and error messages.
  * It depends on the GridView and Player classes from the model package to display the game state.
  */
 public class View {
+    private static final Scanner clavier = new Scanner(System.in);
     /**
      * Displays the game board represented by the given grid.
      *
@@ -17,15 +22,16 @@ public class View {
         var actualLimits = grid.getGridLimits();
         for (int i = actualLimits[2]; i <= actualLimits[0]; i++) {
             System.out.printf("%2d | ", i);
-            for (int j = actualLimits[3]; j >= actualLimits[1]; j--) {
+            for (int j = actualLimits[1]; j <= actualLimits[3]; j++) {
                 System.out.print(" " + getTileString(grid, i, j) + "  ");
             }
             System.out.println();
         }
         System.out.print("    ");
-        for (int i = actualLimits[2]; i <= actualLimits[0]; i++) {
+        for (int i = actualLimits[1]; i <= actualLimits[3]; i++) {
             System.out.printf(" %2d ", i);
         }
+        System.out.println();
     }
 
     /**
@@ -63,7 +69,8 @@ public class View {
                                 Qwirkle command:
                                 - play 1 tile : o <row> <col> <i>
                                 - play line: l <row> <col> <direction> <i1> [<i2>]
-                                - play plic-ploc : m <row1> <col1> <i1> [<row2> <col2> <i2>] - play first : f <i1> [<i2>]
+                                - play plic-ploc : m <row1> <col1> <i1> [<row2> <col2> <i2>]
+                                - play first : f <i1> [<i2>]
                                 - pass : p
                                 - quit : q
                                 i : index in list of tiles
@@ -78,5 +85,20 @@ public class View {
      */
     public static void displayError(String message) {
         System.err.println(message);
+    }
+    public static List<Player> askPlayerName() {
+        List<Player> playerList = new ArrayList<>();
+        System.out.print("How many players would like to play ? ");
+        int n = clavier.nextInt();
+        System.out.println();
+        System.out.println("Enter the names of the players, press 'enter' to confirm the name of each player.");
+        for (int i = 0; i < n; i++) {
+            System.out.print("Player " + (int)(i+1) + " : ");
+            playerList.add(new Player(clavier.next()));
+        }
+        return playerList;
+    }
+    public static void displayWelcome() {
+        System.out.println("===== Qwirkle Game =====");
     }
 }
