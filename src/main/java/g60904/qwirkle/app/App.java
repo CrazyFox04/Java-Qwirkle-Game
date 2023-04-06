@@ -40,6 +40,8 @@ public class App {
                     restart = false;
                 } catch (QwirkleException e) {
                     View.displayError(e.getMessage());
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    View.displayError("The number of parameters entered is incorrect. Please try again.");
                 }
             } else if (command.startsWith("l")) {
                 String[] parts = command.split(" ");
@@ -56,6 +58,8 @@ public class App {
                     restart = false;
                 } catch (QwirkleException e) {
                     View.displayError(e.getMessage());
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    View.displayError("The number of parameters entered is incorrect. Please try again.");
                 }
             } else if (command.startsWith("m")) {
                 String[] parts = command.split(" ");
@@ -68,6 +72,8 @@ public class App {
                     restart = false;
                 } catch (QwirkleException e) {
                     View.displayError(e.getMessage());
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    View.displayError("The number of parameters entered is incorrect. Please try again.");
                 }
             } else if (command.startsWith("f")) {
                 String[] parts = command.split(" ");
@@ -81,6 +87,8 @@ public class App {
                     restart = false;
                 } catch (QwirkleException e) {
                     View.displayError(e.getMessage());
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    View.displayError("The number of parameters entered is incorrect. Please try again.");
                 }
             } else if (command.startsWith("p")) {
                 game.pass();
@@ -97,7 +105,7 @@ public class App {
             case "r" -> Direction.RIGHT;
             case "u" -> Direction.UP;
             case "d" -> Direction.DOWN;
-            default -> throw new QwirkleException("error");
+            default -> throw new QwirkleException("The direction you entered does not match with any known direction");
         };
     }
 }

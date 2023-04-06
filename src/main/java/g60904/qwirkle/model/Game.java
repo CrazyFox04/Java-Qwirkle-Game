@@ -68,8 +68,7 @@ public class Game {
                 pass();
                 restart = false;
             } catch (QwirkleException e) {
-                System.out.println("Vous ne pouvez pas jouer ces tuiles car " + e.getMessage() +
-                        ".\n Veillez réessayer");
+                throw new QwirkleException(e.getMessage());
             }
         }
     }
@@ -90,8 +89,7 @@ public class Game {
                 pass();
                 restart = false;
             } catch (QwirkleException e) {
-                System.out.println("Vous ne pouvez pas jouer ces tuiles car " + e.getMessage() +
-                        ".\n Veillez réessayer");
+                throw new QwirkleException(e.getMessage());
             }
         }
     }
@@ -113,8 +111,7 @@ public class Game {
                 pass();
                 restart = false;
             } catch (QwirkleException e) {
-                System.out.println("Vous ne pouvez pas jouer ces tuiles car " + e.getMessage() +
-                        ".\n Veillez réessayer");
+                throw new QwirkleException(e.getMessage());
             }
         }
     }
