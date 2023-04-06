@@ -1,7 +1,13 @@
+/Users/enzorenard/Nextcloud/IdeaProjects/g60904-qwirkle/src/main/java/g60904/qwirkle/model/Game.java
+/Users/enzorenard/Nextcloud/IdeaProjects/g60904-qwirkle/src/main/java/g60904/qwirkle/model/TileAtPosition.java
 /Users/enzorenard/Nextcloud/IdeaProjects/g60904-qwirkle/src/main/java/g60904/qwirkle/model/Tile.java
 /Users/enzorenard/Nextcloud/IdeaProjects/g60904-qwirkle/src/main/java/g60904/qwirkle/model/Direction.java
+/Users/enzorenard/Nextcloud/IdeaProjects/g60904-qwirkle/src/main/java/g60904/qwirkle/view/View.java
+/Users/enzorenard/Nextcloud/IdeaProjects/g60904-qwirkle/src/main/java/g60904/qwirkle/model/Player.java
+/Users/enzorenard/Nextcloud/IdeaProjects/g60904-qwirkle/src/main/java/g60904/qwirkle/model/QwirkleException.java
 /Users/enzorenard/Nextcloud/IdeaProjects/g60904-qwirkle/src/main/java/g60904/qwirkle/model/Grid.java
 /Users/enzorenard/Nextcloud/IdeaProjects/g60904-qwirkle/src/main/java/g60904/qwirkle/model/Bag.java
-/Users/enzorenard/Nextcloud/IdeaProjects/g60904-qwirkle/src/main/java/g60904/qwirkle/model/QwirkleException.java
+/Users/enzorenard/Nextcloud/IdeaProjects/g60904-qwirkle/src/main/java/g60904/qwirkle/model/GridView.java
+/Users/enzorenard/Nextcloud/IdeaProjects/g60904-qwirkle/src/main/java/g60904/qwirkle/app/App.java
 /Users/enzorenard/Nextcloud/IdeaProjects/g60904-qwirkle/src/main/java/g60904/qwirkle/model/Shape.java
 /Users/enzorenard/Nextcloud/IdeaProjects/g60904-qwirkle/src/main/java/g60904/qwirkle/model/Color.java
