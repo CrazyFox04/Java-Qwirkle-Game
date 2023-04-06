@@ -223,7 +223,7 @@ public class Grid {
             return list;
         } else {
             throw new QwirkleException("In the direction '" + d + "' the Tile " +
-                    "(" + tile +  ") doesn't have a matching color or shape");
+                    "(" + tile + ") doesn't have a matching color or shape");
         }
         return list;
     }

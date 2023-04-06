@@ -8,8 +8,8 @@ import java.util.List;
  * created. The bag contains tiles with different colors and shapes. The tiles can be randomly drawn from the bag.
  */
 public class Bag {
-    private final List<Tile> tiles = new ArrayList<>();
     private static final Bag instance = new Bag();
+    private final List<Tile> tiles = new ArrayList<>();
 
     /**
      * Private constructor used to create the tiles in the bag.
@@ -20,6 +20,15 @@ public class Bag {
                 createNextThreeTiles(color, shape);
             }
         }
+    }
+
+    /**
+     * Returns the singleton instance of the Bag class.
+     *
+     * @return the singleton instance of the Bag class.
+     */
+    public static Bag getInstance() {
+        return instance;
     }
 
     /**
@@ -35,15 +44,6 @@ public class Bag {
     }
 
     /**
-     * Returns the singleton instance of the Bag class.
-     *
-     * @return the singleton instance of the Bag class.
-     */
-    public static Bag getInstance() {
-        return instance;
-    }
-
-    /**
      * Returns an array of n random tiles drawn from the bag.
      * The tiles are removed from the bag.
      *
@@ -53,7 +53,7 @@ public class Bag {
     public Tile[] getRandomTiles(int n) {
         var returnedTile = new Tile[n];
         for (int i = 0; i < n; i++) {
-            int randomIndex = getRandomNumber(size()-1);
+            int randomIndex = getRandomNumber(size() - 1);
             returnedTile[i] = tiles.get(randomIndex);
             tiles.remove(randomIndex);
         }

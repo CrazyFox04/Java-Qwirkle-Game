@@ -1,7 +1,6 @@
 package g60904.qwirkle.model;
 
 import java.util.List;
-import java.util.stream.Stream;
 
 /**
  * This class represents a Qwirkle game. It contains a grid where tiles can be placed and an array of players.

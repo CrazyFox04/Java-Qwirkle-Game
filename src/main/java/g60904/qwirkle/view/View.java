@@ -1,6 +1,7 @@
 package g60904.qwirkle.view;
 
-import g60904.qwirkle.model.*;
+import g60904.qwirkle.model.GridView;
+import g60904.qwirkle.model.Player;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.Scanner;
  */
 public class View {
     private static final Scanner clavier = new Scanner(System.in);
+
     /**
      * Displays the game board represented by the given grid.
      *
@@ -86,6 +88,7 @@ public class View {
     public static void displayError(String message) {
         System.err.println(message);
     }
+
     public static List<Player> askPlayerName() {
         List<Player> playerList = new ArrayList<>();
         System.out.print("How many players would like to play ? ");
@@ -93,11 +96,12 @@ public class View {
         System.out.println();
         System.out.println("Enter the names of the players, press 'enter' to confirm the name of each player.");
         for (int i = 0; i < n; i++) {
-            System.out.print("Player " + (int)(i+1) + " : ");
+            System.out.print("Player " + (i + 1) + " : ");
             playerList.add(new Player(clavier.next()));
         }
         return playerList;
     }
+
     public static void displayWelcome() {
         System.out.println("===== Qwirkle Game =====");
     }

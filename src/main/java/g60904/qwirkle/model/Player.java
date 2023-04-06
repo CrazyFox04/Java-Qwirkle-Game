@@ -11,11 +11,11 @@ public class Player {
     /**
      * The name of the player.
      */
-    private String name;
+    private final String name;
     /**
      * The tiles in the player's hand.
      */
-    private List<Tile> tiles;
+    private final List<Tile> tiles;
 
     /**
      * Constructs a new player with the specified name.
@@ -49,7 +49,7 @@ public class Player {
      * Refills the player's hand by adding new random tiles from the bag.
      */
     public void refill() {
-        tiles.addAll(List.of(Bag.getInstance().getRandomTiles(- (tiles.size() - 6))));
+        tiles.addAll(List.of(Bag.getInstance().getRandomTiles(-(tiles.size() - 6))));
     }
 
     /**

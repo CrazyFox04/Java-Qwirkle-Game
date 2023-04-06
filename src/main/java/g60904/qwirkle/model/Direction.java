@@ -18,7 +18,7 @@ public enum Direction {
      * @param row the deltaRow associated with this Direction
      * @param col the deltaCol associated with this Direction
      */
-    private Direction(int row, int col) {
+    Direction(int row, int col) {
         deltaRow = row;
         deltaCol = col;
     }
