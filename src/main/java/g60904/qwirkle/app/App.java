@@ -27,6 +27,7 @@ public class App {
         boolean restart = true;
         while (restart) {
             String command = clavier.nextLine();
+            command = command.toLowerCase();
             if (command.startsWith("h")) {
                 View.displayHelp();
             } else if (command.startsWith("o")) {
