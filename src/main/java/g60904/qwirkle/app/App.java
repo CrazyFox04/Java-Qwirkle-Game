@@ -34,8 +34,12 @@ public class App {
                 int row = Integer.parseInt(parts[1]);
                 int col = Integer.parseInt(parts[2]);
                 int tileIndex = Integer.parseInt(parts[3]);
-                game.play(row, col, tileIndex);
-                restart = false;
+                try {
+                    game.play(row, col, tileIndex);
+                    restart = false;
+                } catch (QwirkleException e) {
+                    View.displayError(e.getMessage());
+                }
             } else if (command.startsWith("l")) {
                 String[] parts = command.split(" ");
                 int row = Integer.parseInt(parts[1]);
@@ -46,8 +50,12 @@ public class App {
                 if (parts.length > 5) {
                     tileIndex2 = Integer.parseInt(parts[5]);
                 }
-                game.play(row, col, d, tileIndex1, tileIndex2);
-                restart = false;
+                try {
+                    game.play(row, col, d, tileIndex1, tileIndex2);
+                    restart = false;
+                } catch (QwirkleException e) {
+                    View.displayError(e.getMessage());
+                }
             } else if (command.startsWith("m")) {
                 String[] parts = command.split(" ");
                 var args = new int[parts.length - 1];
@@ -63,8 +71,12 @@ public class App {
             } else if (command.startsWith("f")) {
                 String[] parts = command.split(" ");
                 int tileIndex1 = Integer.parseInt(parts[1]);
-                game.first(Direction.DOWN, tileIndex1);
-                restart = false;
+                try {
+                    game.first(Direction.DOWN, tileIndex1);
+                    restart = false;
+                } catch (QwirkleException e) {
+                    View.displayError(e.getMessage());
+                }
             } else if (command.startsWith("p")) {
                 game.pass();
                 restart = false;
