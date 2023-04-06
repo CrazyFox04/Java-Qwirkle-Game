@@ -58,7 +58,7 @@ public class View {
      * @param player the Player object whose hand is to be displayed
      */
     public static void display(Player player) {
-        System.out.println(player.getName() + " à votre tour, " + "vous avez dans votre main : " + player.getHand());
+        System.out.println(player.getName() + " it's your turn, " + "you have in your hand (0 - 5) : " + player.getHand());
     }
 
     /**
@@ -75,6 +75,7 @@ public class View {
                                 - play first : f <direction> <i1> [<i2>]
                                 - pass : p
                                 - quit : q
+                                - display this help : h
                                 i : index in list of tiles
                                 d : direction in l (left), r (right), u (up), d(down)
                         """);
@@ -94,7 +95,10 @@ public class View {
         System.out.print("How many players would like to play ? ");
         int n = 0;
         while (n<1) {
-            n = clavier.nextInt();
+            n = lireEntier();
+            if (n<1) {
+                System.out.print("Please enter an integer greater than or equal to 1 : ");
+            }
         }
         System.out.println();
         System.out.println("Enter the names of the players, press 'enter' to confirm the name of each player.");
@@ -104,7 +108,13 @@ public class View {
         }
         return playerList;
     }
-
+    static int lireEntier() {
+        while (!clavier.hasNextInt()) {
+            clavier.next();
+            System.out.print("Please enter an integer greater than or equal to 1 : ");
+        }
+        return clavier.nextInt();
+    }
     public static void displayWelcome() {
         System.out.println("===== Qwirkle Game =====");
     }

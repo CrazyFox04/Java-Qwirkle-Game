@@ -31,40 +31,44 @@ public class App {
             if (command.startsWith("h")) {
                 View.displayHelp();
             } else if (command.startsWith("o")) {
-                String[] parts = command.split(" ");
-                int row = Integer.parseInt(parts[1]);
-                int col = Integer.parseInt(parts[2]);
-                int tileIndex = Integer.parseInt(parts[3]);
                 try {
+                    String[] parts = command.split(" ");
+                    int row = Integer.parseInt(parts[1]);
+                    int col = Integer.parseInt(parts[2]);
+                    int tileIndex = Integer.parseInt(parts[3]);
                     game.play(row, col, tileIndex);
                     restart = false;
                 } catch (QwirkleException e) {
                     View.displayError(e.getMessage());
                 } catch (ArrayIndexOutOfBoundsException e) {
                     View.displayError("The number of parameters entered is incorrect. Please try again.");
+                } catch (NumberFormatException e) {
+                    View.displayError("The parameters entered must be consistent integers. Please try again.");
                 }
             } else if (command.startsWith("l")) {
-                String[] parts = command.split(" ");
-                int row = Integer.parseInt(parts[1]);
-                int col = Integer.parseInt(parts[2]);
-                var d = getDirection(parts[3]);
-                int tileIndex1 = Integer.parseInt(parts[4]);
-                int tileIndex2 = -1;
-                if (parts.length > 5) {
-                    tileIndex2 = Integer.parseInt(parts[5]);
-                }
                 try {
+                    String[] parts = command.split(" ");
+                    int row = Integer.parseInt(parts[1]);
+                    int col = Integer.parseInt(parts[2]);
+                    var d = getDirection(parts[3]);
+                    int tileIndex1 = Integer.parseInt(parts[4]);
+                    int tileIndex2 = -1;
+                    if (parts.length > 5) {
+                        tileIndex2 = Integer.parseInt(parts[5]);
+                    }
                     game.play(row, col, d, tileIndex1, tileIndex2);
                     restart = false;
                 } catch (QwirkleException e) {
                     View.displayError(e.getMessage());
                 } catch (ArrayIndexOutOfBoundsException e) {
                     View.displayError("The number of parameters entered is incorrect. Please try again.");
+                } catch (NumberFormatException e) {
+                    View.displayError("The parameters entered must be consistent integers. Please try again.");
                 }
             } else if (command.startsWith("m")) {
-                String[] parts = command.split(" ");
-                var args = new int[parts.length - 1];
                 try {
+                    String[] parts = command.split(" ");
+                    var args = new int[parts.length - 1];
                     for (int i = 1; i < parts.length; i++) {
                         args[i - 1] = Integer.parseInt(parts[i]);
                     }
@@ -74,21 +78,25 @@ public class App {
                     View.displayError(e.getMessage());
                 } catch (ArrayIndexOutOfBoundsException e) {
                     View.displayError("The number of parameters entered is incorrect. Please try again.");
+                } catch (NumberFormatException e) {
+                    View.displayError("The parameters entered must be consistent integers. Please try again.");
                 }
             } else if (command.startsWith("f")) {
-                String[] parts = command.split(" ");
-                var d = getDirection(parts[1]);
-                var args = new int[parts.length - 2];
-                for (int i = 2; i < parts.length; i++) {
-                    args[i - 2] = Integer.parseInt(parts[i]);
-                }
                 try {
+                    String[] parts = command.split(" ");
+                    var d = getDirection(parts[1]);
+                    var args = new int[parts.length - 2];
+                    for (int i = 2; i < parts.length; i++) {
+                        args[i - 2] = Integer.parseInt(parts[i]);
+                    }
                     game.first(d, args);
                     restart = false;
                 } catch (QwirkleException e) {
                     View.displayError(e.getMessage());
                 } catch (ArrayIndexOutOfBoundsException e) {
                     View.displayError("The number of parameters entered is incorrect. Please try again.");
+                } catch (NumberFormatException e) {
+                    View.displayError("The parameters entered must be consistent integers. Please try again.");
                 }
             } else if (command.startsWith("p")) {
                 game.pass();
@@ -105,7 +113,9 @@ public class App {
             case "r" -> Direction.RIGHT;
             case "u" -> Direction.UP;
             case "d" -> Direction.DOWN;
-            default -> throw new QwirkleException("The direction you entered does not match with any known direction");
+            default ->
+                    throw new QwirkleException("The direction you entered does not match with any known direction. " +
+                            "Please try again.");
         };
     }
 }
