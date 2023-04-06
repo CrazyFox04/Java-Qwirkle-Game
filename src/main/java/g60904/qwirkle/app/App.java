@@ -71,9 +71,13 @@ public class App {
                 }
             } else if (command.startsWith("f")) {
                 String[] parts = command.split(" ");
-                int tileIndex1 = Integer.parseInt(parts[1]);
+                var d = getDirection(parts[1]);
+                var args = new int[parts.length - 2];
+                for (int i = 2; i < parts.length; i++) {
+                    args[i - 2] = Integer.parseInt(parts[i]);
+                }
                 try {
-                    game.first(Direction.DOWN, tileIndex1);
+                    game.first(d, args);
                     restart = false;
                 } catch (QwirkleException e) {
                     View.displayError(e.getMessage());

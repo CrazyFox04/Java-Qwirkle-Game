@@ -70,7 +70,7 @@ public class View {
                                 - play 1 tile : o <row> <col> <i>
                                 - play line: l <row> <col> <direction> <i1> [<i2>]
                                 - play plic-ploc : m <row1> <col1> <i1> [<row2> <col2> <i2>]
-                                - play first : f <i1> [<i2>]
+                                - play first : f <direction> <i1> [<i2>]
                                 - pass : p
                                 - quit : q
                                 i : index in list of tiles
