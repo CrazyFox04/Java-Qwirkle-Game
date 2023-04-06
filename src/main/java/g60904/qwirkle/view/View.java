@@ -92,7 +92,10 @@ public class View {
     public static List<Player> askPlayerName() {
         List<Player> playerList = new ArrayList<>();
         System.out.print("How many players would like to play ? ");
-        int n = clavier.nextInt();
+        int n = 0;
+        while (n<1) {
+            n = clavier.nextInt();
+        }
         System.out.println();
         System.out.println("Enter the names of the players, press 'enter' to confirm the name of each player.");
         for (int i = 0; i < n; i++) {
