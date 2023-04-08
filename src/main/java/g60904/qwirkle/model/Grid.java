@@ -44,24 +44,19 @@ public class Grid {
         if (!isEmpty) {
             throw new QwirkleException("This method can only be called when the Grid is empty.");
         }
-        Color savedColor = line[0].color();
-        var savedShapes = new ArrayList<Shape>();
-        for (Tile tile : line) {
-            if (tile.color() != savedColor) {
-                throw new QwirkleException("You can't play these Tiles, the color isn't the same : " + savedColor);
+        tiles[45][45] = line[0];
+        int i = 0;
+        try {
+            for (i = 1; i < line.length; i++) {
+                add(45 + i * d.getDeltaRow(), 45 + i * d.getDeltaCol(), line[i]);
             }
-            if (savedShapes.contains(tile.shape())) {
-                throw new QwirkleException("You can't play these Tiles, there is more than one piece " +
-                        "with the same shape");
-            }
-            savedShapes.add(tile.shape());
-        }
-        int addCounter = 0;
-        for (Tile tile : line) {
-            int rowToAddTile = 45 + addCounter * d.getDeltaRow();
-            int colToAddTile = 45 + addCounter * d.getDeltaCol();
-            tiles[rowToAddTile][colToAddTile] = tile;
-            addCounter++;
+        } catch (QwirkleException e) {
+            remove(45, 45, d, i);
+            String lineType = (d == Direction.LEFT || d == Direction.RIGHT) ? "row" : "column";
+            throw new QwirkleException("The position (" + (45 + (i) * d.getDeltaRow())
+                    + ", " + (45 + (i) * d.getDeltaCol()) +
+                    ") cannot accept the Tile (" + line[i] + ").\n All previously placed tiles in this " +
+                    lineType + " have been removed.");
         }
         modifyLimits(d, line.length, 45, 45);
         isEmpty = false;
@@ -86,7 +81,7 @@ public class Grid {
             modifyLimits(row, col);
         } else {
             throw new QwirkleException("The position (" + row + ", " + col + ") " +
-                    "cannot accept the Tile (" + tile.shape() + " " + tile.color() + ").");
+                    "cannot accept the Tile (" + tile + ").");
         }
     }
 
@@ -114,8 +109,7 @@ public class Grid {
             String lineType = (d == Direction.LEFT || d == Direction.RIGHT) ? "row" : "column";
             throw new QwirkleException("The position (" + (row + (numberOfTilesPlaced) * d.getDeltaRow())
                     + ", " + (col + (numberOfTilesPlaced) * d.getDeltaCol()) +
-                    ") cannot accept the Tile (" + line[numberOfTilesPlaced].shape() + " "
-                    + line[numberOfTilesPlaced].color() + ").\n All previously placed tiles in this " +
+                    ") cannot accept the Tile (" + line[numberOfTilesPlaced] + ").\n All previously placed tiles in this " +
                     lineType + " have been removed.");
         }
     }
