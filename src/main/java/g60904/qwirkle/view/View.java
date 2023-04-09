@@ -67,7 +67,10 @@ public class View {
     public static void displayHelp() {
         System.out.println(
                 """
-                                QWIRKLE
+                                
+                                ============================================================
+                                                       QWIRKLE Help
+                                ============================================================
                                 Qwirkle command:
                                 - play 1 tile : o <row> <col> <i>
                                 - play line: l <row> <col> <direction> <i1> [<i2>]
@@ -78,6 +81,7 @@ public class View {
                                 - display this help : h
                                 i : index in list of tiles
                                 d : direction in l (left), r (right), u (up), d(down)
+                                
                         """);
     }
 
@@ -94,9 +98,9 @@ public class View {
         List<Player> playerList = new ArrayList<>();
         System.out.print("How many players would like to play ? ");
         int n = 0;
-        while (n<1) {
+        while (n < 1) {
             n = lireEntier();
-            if (n<1) {
+            if (n < 1) {
                 System.out.print("Please enter an integer greater than or equal to 1 : ");
             }
         }
@@ -106,8 +110,10 @@ public class View {
             System.out.print("Player " + (i + 1) + " : ");
             playerList.add(new Player(clavier.next()));
         }
+        System.out.println();
         return playerList;
     }
+
     static int lireEntier() {
         while (!clavier.hasNextInt()) {
             clavier.next();
@@ -115,7 +121,14 @@ public class View {
         }
         return clavier.nextInt();
     }
+
     public static void displayWelcome() {
-        System.out.println("===== Qwirkle Game =====");
+        System.out.println(
+                """
+                        ==================================================================================
+                                                          QWIRKLE Game
+                        ==================================================================================
+                        """
+        );
     }
 }

@@ -18,18 +18,19 @@ public class App {
                 View.display(new GridView(game.getGrid()));
                 player.refill();
                 View.display(player);
-                command(game);
+                command(game, player);
             }
         }
     }
 
-    private static void command(Game game) {
+    private static void command(Game game, Player player) {
         boolean restart = true;
         while (restart) {
             String command = clavier.nextLine();
             command = command.toLowerCase();
             if (command.startsWith("h")) {
                 View.displayHelp();
+                View.display(player);
             } else if (command.startsWith("o")) {
                 try {
                     String[] parts = command.split(" ");
