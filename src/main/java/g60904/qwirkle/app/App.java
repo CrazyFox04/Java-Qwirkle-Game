@@ -49,15 +49,14 @@ public class App {
             } else if (command.startsWith("l")) {
                 try {
                     String[] parts = command.split(" ");
-                    int row = Integer.parseInt(parts[1]);
-                    int col = Integer.parseInt(parts[2]);
+                    var row = Integer.parseInt(parts[1]);
+                    var col = Integer.parseInt(parts[2]);
                     var d = getDirection(parts[3]);
-                    int tileIndex1 = Integer.parseInt(parts[4]);
-                    int tileIndex2 = -1;
-                    if (parts.length > 5) {
-                        tileIndex2 = Integer.parseInt(parts[5]);
+                    var args = new int[parts.length - 4];
+                    for (int i = 4; i < parts.length; i++) {
+                        args[i - 4] = Integer.parseInt(parts[i]);
                     }
-                    game.play(row, col, d, tileIndex1, tileIndex2);
+                    game.play(row, col, d, args);
                     restart = false;
                 } catch (QwirkleException e) {
                     View.displayError(e.getMessage());
