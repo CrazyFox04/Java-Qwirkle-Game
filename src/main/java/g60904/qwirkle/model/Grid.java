@@ -55,8 +55,7 @@ public class Grid {
             String lineType = (d == Direction.LEFT || d == Direction.RIGHT) ? "row" : "column";
             throw new QwirkleException("The position (" + (45 + (i) * d.getDeltaRow())
                     + ", " + (45 + (i) * d.getDeltaCol()) +
-                    ") cannot accept the Tile (" + line[i] + ").\n All previously placed tiles in this " +
-                    lineType + " have been removed.");
+                    ") cannot accept the Tile (" + line[i] + ").\n No tiles have been placed.");
         }
         modifyLimits(d, line.length, 45, 45);
         isEmpty = false;
@@ -109,8 +108,7 @@ public class Grid {
             String lineType = (d == Direction.LEFT || d == Direction.RIGHT) ? "row" : "column";
             throw new QwirkleException("The position (" + (row + (numberOfTilesPlaced) * d.getDeltaRow())
                     + ", " + (col + (numberOfTilesPlaced) * d.getDeltaCol()) +
-                    ") cannot accept the Tile (" + line[numberOfTilesPlaced] + ").\n All previously placed tiles in this " +
-                    lineType + " have been removed.");
+                    ") cannot accept the Tile (" + line[numberOfTilesPlaced] + ").\n No tiles have been placed.");
         }
     }
 
