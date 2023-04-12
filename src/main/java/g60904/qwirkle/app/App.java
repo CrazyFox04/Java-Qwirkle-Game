@@ -141,7 +141,8 @@ public class App {
             case "u" -> Direction.UP;
             case "d" -> Direction.DOWN;
             default ->
-                    throw new QwirkleException("The direction you entered does not match with any known direction. " + "Please try again.");
+                    throw new QwirkleException("The direction you entered does not match with any known direction. "
+                            + "Please try again.");
         };
     }
 }
