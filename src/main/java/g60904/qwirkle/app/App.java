@@ -8,22 +8,23 @@ import java.util.Scanner;
 
 public class App {
     private static final Scanner clavier = new Scanner(System.in);
+    private static Game game;
 
     public static void main(String[] args) {
         View.displayWelcome();
         List<Player> playersList = View.askPlayerName();
-        Game game = new Game(playersList);
+        game = new Game(playersList);
         while (true) {
             for (Player player : playersList) {
                 View.display(new GridView(game.getGrid()));
                 player.refill();
                 View.display(player);
-                command(game, player);
+                command(player);
             }
         }
     }
 
-    private static void command(Game game, Player player) {
+    private static void command(Player player) {
         boolean restart = true;
         while (restart) {
             String command = clavier.nextLine();
@@ -34,22 +35,22 @@ public class App {
                     displayHelp(player);
                     restart = false;
                 }
-                case "o" -> restart = placeOneTile(game, restart, command);
-                case "l" -> restart = placeLineOfTiles(game, restart, command);
-                case "m" -> restart = placeTiles(game, restart, command);
-                case "f" -> restart = placeFirstTiles(game, restart, command);
-                case "p" -> restart = pass(game);
+                case "o" -> restart = placeOneTile(restart, command);
+                case "l" -> restart = placeLineOfTiles(restart, command);
+                case "m" -> restart = placeTiles(restart, command);
+                case "f" -> restart = placeFirstTiles(restart, command);
+                case "p" -> restart = pass();
                 default -> View.displayError("This command, doesn't exist. Please try again.");
             }
         }
     }
 
-    private static boolean pass(Game game) {
+    private static boolean pass() {
         game.pass();
         return false;
     }
 
-    private static boolean placeFirstTiles(Game game, boolean restart, String command) {
+    private static boolean placeFirstTiles(boolean restart, String command) {
         try {
             String[] parts = command.split(" ");
             var d = getDirection(parts[1]);
@@ -69,7 +70,7 @@ public class App {
         return restart;
     }
 
-    private static boolean placeTiles(Game game, boolean restart, String command) {
+    private static boolean placeTiles(boolean restart, String command) {
         try {
             String[] parts = command.split(" ");
             var args = new int[parts.length - 1];
@@ -88,7 +89,7 @@ public class App {
         return restart;
     }
 
-    private static boolean placeLineOfTiles(Game game, boolean restart, String command) {
+    private static boolean placeLineOfTiles(boolean restart, String command) {
         try {
             String[] parts = command.split(" ");
             var row = Integer.parseInt(parts[1]);
@@ -110,7 +111,7 @@ public class App {
         return restart;
     }
 
-    private static boolean placeOneTile(Game game, boolean restart, String command) {
+    private static boolean placeOneTile(boolean restart, String command) {
         try {
             String[] parts = command.split(" ");
             int row = Integer.parseInt(parts[1]);
