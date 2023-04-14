@@ -309,8 +309,8 @@ public class Grid {
         switch (d) {
             case UP -> actualLimits[2] = Math.min(actualLimits[2], row - numberPlaced);
             case DOWN -> actualLimits[0] = Math.max(actualLimits[0], row + numberPlaced);
-            case LEFT -> actualLimits[1] = Math.min(actualLimits[1], row - numberPlaced);
-            case RIGHT -> actualLimits[3] = Math.max(actualLimits[0], row + numberPlaced);
+            case LEFT -> actualLimits[1] = Math.min(actualLimits[1], col - numberPlaced);
+            case RIGHT -> actualLimits[3] = Math.max(actualLimits[3], col + numberPlaced);
         }
     }
 
