@@ -33,7 +33,6 @@ public class App {
             switch (parts[0]) {
                 case "h" -> {
                     displayHelp(player);
-                    restart = false;
                 }
                 case "o" -> restart = placeOneTile(restart, command);
                 case "l" -> restart = placeLineOfTiles(restart, command);
