@@ -6,17 +6,20 @@ package g60904.qwirkle.model;
  * @see Tile
  */
 public enum Color {
-    BLUE, RED, GREEN, ORANGE, YELLOW, PURPLE;
+    BLUE("\033[34m"),
+    RED("\033[31m"),
+    GREEN("\033[32m"),
+    ORANGE("\u001B[38;2;255;157;10m"),
+    YELLOW("\033[93m"),
+    PURPLE("\033[35m");
+    private final String code;
+
+    Color(String code) {
+        this.code = code;
+    }
 
     @Override
     public String toString() {
-        return switch (this) {
-            case BLUE -> "\033[34m";
-            case RED -> "\033[31m";
-            case GREEN -> "\033[32m";
-            case ORANGE -> "\u001B[38;2;255;157;10m";
-            case YELLOW -> "\033[93m";
-            case PURPLE -> "\033[35m";
-        };
+        return this.code;
     }
 }
