@@ -123,10 +123,16 @@ public class Grid {
 
     public void add(TileAtPosition... line) {
         int[] copyOfLimits = Arrays.copyOf(actualLimits, actualLimits.length);
+        var row = line[0].row();
+        var col = line[0].col();
         try {
             for (TileAtPosition tile : line) {
-                add(tile.row(), tile.col(), tile.tile());
-                modifyLimits(tile.row(), tile.col());
+                if (tile.row() == row || tile.col() == col) {
+                    add(tile.row(), tile.col(), tile.tile());
+                    modifyLimits(tile.row(), tile.col());
+                } else {
+                    throw new QwirkleException("The tile need to be played on same line or column");
+                }
             }
         } catch (QwirkleException e) {
             removeTilesDueToException(line);
