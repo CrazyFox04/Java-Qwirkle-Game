@@ -231,8 +231,12 @@ public class Grid {
     private boolean checkRedundantTiles(List<Object> tilesInDir1, List<Object> tilesInDir2, Tile tile) {
         if (!tilesInDir1.isEmpty() && tilesInDir1.get(0) instanceof Shape) {
             tilesInDir1.add(tile.shape());
-        } else {
+        } else if (!tilesInDir2.isEmpty() && tilesInDir2.get(0) instanceof Shape) {
+            tilesInDir2.add(tile.shape());
+        } else if (!tilesInDir1.isEmpty() && tilesInDir1.get(0) instanceof Color) {
             tilesInDir1.add(tile.color());
+        } else if (!tilesInDir2.isEmpty() && tilesInDir2.get(0) instanceof Color) {
+            tilesInDir2.add(tile.color());
         }
         var list = Stream.concat(tilesInDir1.stream(), tilesInDir2.stream()).toList();
         var distinctSet = new HashSet<>(list);
