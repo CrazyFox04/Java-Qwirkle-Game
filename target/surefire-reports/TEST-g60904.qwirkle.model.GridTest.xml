@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="g60904.qwirkle.model.GridTest" time="0.051" tests="41" errors="0" skipped="0" failures="0">
+  <properties>
+    <property name="java.specification.version" value="18"/>
+    <property name="sun.jnu.encoding" value="UTF-8"/>
+    <property name="java.class.path" value="/Users/enzorenard/Nextcloud/IdeaProjects/g60904-qwirkle/target/test-classes:/Users/enzorenard/Nextcloud/IdeaProjects/g60904-qwirkle/target/classes:/Users/enzorenard/.m2/repository/org/junit/jupiter/junit-jupiter/5.9.2/junit-jupiter-5.9.2.jar:/Users/enzorenard/.m2/repository/org/junit/jupiter/junit-jupiter-api/5.9.2/junit-jupiter-api-5.9.2.jar:/Users/enzorenard/.m2/repository/org/opentest4j/opentest4j/1.2.0/opentest4j-1.2.0.jar:/Users/enzorenard/.m2/repository/org/junit/platform/junit-platform-commons/1.9.2/junit-platform-commons-1.9.2.jar:/Users/enzorenard/.m2/repository/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar:/Users/enzorenard/.m2/repository/org/junit/jupiter/junit-jupiter-params/5.9.2/junit-jupiter-params-5.9.2.jar:/Users/enzorenard/.m2/repository/org/junit/jupiter/junit-jupiter-engine/5.9.2/junit-jupiter-engine-5.9.2.jar:/Users/enzorenard/.m2/repository/org/junit/platform/junit-platform-engine/1.9.2/junit-platform-engine-1.9.2.jar:"/>
+    <property name="java.vm.vendor" value="Oracle Corporation"/>
+    <property name="sun.arch.data.model" value="64"/>
+    <property name="java.vendor.url" value="https://java.oracle.com/"/>
+    <property name="os.name" value="Mac OS X"/>
+    <property name="java.vm.specification.version" value="18"/>
+    <property name="sun.java.launcher" value="SUN_STANDARD"/>
+    <property name="user.country" value="BE"/>
+    <property name="sun.boot.library.path" value="/Library/Java/JavaVirtualMachines/jdk-18.0.2.1.jdk/Contents/Home/lib"/>
+    <property name="sun.java.command" value="/Users/enzorenard/Nextcloud/IdeaProjects/g60904-qwirkle/target/surefire/surefirebooter13693396798264025567.jar /Users/enzorenard/Nextcloud/IdeaProjects/g60904-qwirkle/target/surefire 2023-04-18T14-41-08_549-jvmRun1 surefire4915120495067702416tmp surefire_016501499578745771122tmp"/>
+    <property name="http.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
+    <property name="jdk.debug" value="release"/>
+    <property name="surefire.test.class.path" value="/Users/enzorenard/Nextcloud/IdeaProjects/g60904-qwirkle/target/test-classes:/Users/enzorenard/Nextcloud/IdeaProjects/g60904-qwirkle/target/classes:/Users/enzorenard/.m2/repository/org/junit/jupiter/junit-jupiter/5.9.2/junit-jupiter-5.9.2.jar:/Users/enzorenard/.m2/repository/org/junit/jupiter/junit-jupiter-api/5.9.2/junit-jupiter-api-5.9.2.jar:/Users/enzorenard/.m2/repository/org/opentest4j/opentest4j/1.2.0/opentest4j-1.2.0.jar:/Users/enzorenard/.m2/repository/org/junit/platform/junit-platform-commons/1.9.2/junit-platform-commons-1.9.2.jar:/Users/enzorenard/.m2/repository/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar:/Users/enzorenard/.m2/repository/org/junit/jupiter/junit-jupiter-params/5.9.2/junit-jupiter-params-5.9.2.jar:/Users/enzorenard/.m2/repository/org/junit/jupiter/junit-jupiter-engine/5.9.2/junit-jupiter-engine-5.9.2.jar:/Users/enzorenard/.m2/repository/org/junit/platform/junit-platform-engine/1.9.2/junit-platform-engine-1.9.2.jar:"/>
+    <property name="sun.cpu.endian" value="little"/>
+    <property name="user.home" value="/Users/enzorenard"/>
+    <property name="user.language" value="en"/>
+    <property name="java.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.version.date" value="2022-08-18"/>
+    <property name="java.home" value="/Library/Java/JavaVirtualMachines/jdk-18.0.2.1.jdk/Contents/Home"/>
+    <property name="file.separator" value="/"/>
+    <property name="basedir" value="/Users/enzorenard/Nextcloud/IdeaProjects/g60904-qwirkle"/>
+    <property name="java.vm.compressedOopsMode" value="Zero based"/>
+    <property name="line.separator" value="&#10;"/>
+    <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.specification.name" value="Java Platform API Specification"/>
+    <property name="apple.awt.application.name" value="ForkedBooter"/>
+    <property name="surefire.real.class.path" value="/Users/enzorenard/Nextcloud/IdeaProjects/g60904-qwirkle/target/surefire/surefirebooter13693396798264025567.jar"/>
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
+    <property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
+    <property name="java.runtime.version" value="18.0.2.1+1-1"/>
+    <property name="user.name" value="enzorenard"/>
+    <property name="path.separator" value=":"/>
+    <property name="os.version" value="13.3.1"/>
+    <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
+    <property name="file.encoding" value="UTF-8"/>
+    <property name="java.vm.name" value="Java HotSpot(TM) 64-Bit Server VM"/>
+    <property name="localRepository" value="/Users/enzorenard/.m2/repository"/>
+    <property name="java.vendor.url.bug" value="https://bugreport.java.com/bugreport/"/>
+    <property name="java.io.tmpdir" value="/var/folders/x_/2xrnjzx11z1_rxvp_qs0ydmr0000gn/T/"/>
+    <property name="idea.version" value="2023.1"/>
+    <property name="java.version" value="18.0.2.1"/>
+    <property name="user.dir" value="/Users/enzorenard/Nextcloud/IdeaProjects/g60904-qwirkle"/>
+    <property name="os.arch" value="aarch64"/>
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+    <property name="native.encoding" value="US-ASCII"/>
+    <property name="java.library.path" value="/Users/enzorenard/Library/Java/Extensions:/Library/Java/Extensions:/Network/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java:."/>
+    <property name="java.vm.info" value="mixed mode, sharing"/>
+    <property name="java.vendor" value="Oracle Corporation"/>
+    <property name="java.vm.version" value="18.0.2.1+1-1"/>
+    <property name="sun.io.unicode.encoding" value="UnicodeBig"/>
+    <property name="socksNonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
+    <property name="java.class.version" value="62.0"/>
+  </properties>
+  <testcase name="firstAddTest_MoreTilesOK" classname="g60904.qwirkle.model.GridTest" time="0.017"/>
+  <testcase name="rules_Sonia_e_adapted_to_fail" classname="g60904.qwirkle.model.GridTest" time="0.004"/>
+  <testcase name="rules_sonia_a_adapted_to_fail" classname="g60904.qwirkle.model.GridTest" time="0.003"/>
+  <testcase name="rules_Vincent_l_adapted_to_fail" classname="g60904.qwirkle.model.GridTest" time="0.001"/>
+  <testcase name="addTest_NoNeighboursTile" classname="g60904.qwirkle.model.GridTest" time="0.001"/>
+  <testcase name="addTest_RightATile_SameColor" classname="g60904.qwirkle.model.GridTest" time="0.001"/>
+  <testcase name="addTest_RightATile_SameShape" classname="g60904.qwirkle.model.GridTest" time="0"/>
+  <testcase name="rules_Cedric_b_adapted_to_fail" classname="g60904.qwirkle.model.GridTest" time="0.001"/>
+  <testcase name="rules_Sonia_i_adapted_to_fail" classname="g60904.qwirkle.model.GridTest" time="0"/>
+  <testcase name="firstAddTest_DifferentColorException" classname="g60904.qwirkle.model.GridTest" time="0"/>
+  <testcase name="rules_Elvire_c_adapted_to_fail" classname="g60904.qwirkle.model.GridTest" time="0"/>
+  <testcase name="rules_Sonia_a" classname="g60904.qwirkle.model.GridTest" time="0"/>
+  <testcase name="rules_Sonia_e" classname="g60904.qwirkle.model.GridTest" time="0.001"/>
+  <testcase name="rules_Sonia_i" classname="g60904.qwirkle.model.GridTest" time="0"/>
+  <testcase name="rules_Cedric_f_adapted_to_fail" classname="g60904.qwirkle.model.GridTest" time="0.001"/>
+  <testcase name="addTest_TileBetweenTwoTiles_JoinTwoTiles" classname="g60904.qwirkle.model.GridTest" time="0"/>
+  <testcase name="rules_Vincent_d_adapted_to_fail" classname="g60904.qwirkle.model.GridTest" time="0.001"/>
+  <testcase name="rules_Cedric_b" classname="g60904.qwirkle.model.GridTest" time="0"/>
+  <testcase name="rules_Cedric_f" classname="g60904.qwirkle.model.GridTest" time="0"/>
+  <testcase name="rules_Cedric_j" classname="g60904.qwirkle.model.GridTest" time="0"/>
+  <testcase name="rules_Elvire_g_adapted_to_fail" classname="g60904.qwirkle.model.GridTest" time="0"/>
+  <testcase name="addTest_LeftATile_SameColor" classname="g60904.qwirkle.model.GridTest" time="0"/>
+  <testcase name="addTest_LeftATile_SameShape" classname="g60904.qwirkle.model.GridTest" time="0.001"/>
+  <testcase name="firstAddTest_SameShapeException" classname="g60904.qwirkle.model.GridTest" time="0"/>
+  <testcase name="firstAddTest_DifferentColorSameShapeException" classname="g60904.qwirkle.model.GridTest" time="0.001"/>
+  <testcase name="firstAddTest_oneTileOK" classname="g60904.qwirkle.model.GridTest" time="0"/>
+  <testcase name="addTest_NotSameColorAndShape" classname="g60904.qwirkle.model.GridTest" time="0.002"/>
+  <testcase name="addTest_TileBetweenTwoTiles_" classname="g60904.qwirkle.model.GridTest" time="0.001"/>
+  <testcase name="rules_Vincent_d" classname="g60904.qwirkle.model.GridTest" time="0"/>
+  <testcase name="rules_Vincent_h" classname="g60904.qwirkle.model.GridTest" time="0.001"/>
+  <testcase name="rules_Vincent_l" classname="g60904.qwirkle.model.GridTest" time="0"/>
+  <testcase name="rules_Cedric_j_adapted_to_fail" classname="g60904.qwirkle.model.GridTest" time="0"/>
+  <testcase name="addTest_UpATile_SameColor" classname="g60904.qwirkle.model.GridTest" time="0"/>
+  <testcase name="addTest_UpATile_SameShape" classname="g60904.qwirkle.model.GridTest" time="0"/>
+  <testcase name="rules_Vincent_h_adapted_to_fail" classname="g60904.qwirkle.model.GridTest" time="0.001"/>
+  <testcase name="rules_Elvire_k_adapted_to_fail" classname="g60904.qwirkle.model.GridTest" time="0"/>
+  <testcase name="addTest_DownATile_SameColor" classname="g60904.qwirkle.model.GridTest" time="0.001"/>
+  <testcase name="addTest_DownATile_SameShape" classname="g60904.qwirkle.model.GridTest" time="0"/>
+  <testcase name="rules_Elvire_c" classname="g60904.qwirkle.model.GridTest" time="0"/>
+  <testcase name="rules_Elvire_g" classname="g60904.qwirkle.model.GridTest" time="0.001"/>
+  <testcase name="rules_Elvire_k" classname="g60904.qwirkle.model.GridTest" time="0"/>
+</testsuite>
