@@ -19,13 +19,15 @@ public class Grid {
     private final Tile[][] tiles;
     private boolean isEmpty;
     private int[] actualLimits;
+    private final int size;
 
     /**
      * Constructs a new Grid instance with a 91x91 2D array of Tiles and initializes
      * the isEmpty flag to true.
      */
     public Grid() {
-        tiles = new Tile[91][91];
+        size = 91;
+        tiles = new Tile[size][size];
         isEmpty = true;
         actualLimits = new int[]{46, 44, 44, 46};
     }
@@ -189,9 +191,6 @@ public class Grid {
     private List<Object> getLineInDirection(Function<Tile, Object> which, Direction d, int row, int col) {
         var nextTile = tiles[row += d.getDeltaRow()][col += d.getDeltaCol()];
         ArrayList<Object> resultList = new ArrayList<>();
-        if (nextTile == null) {
-            return new ArrayList<>();
-        }
         while (nextTile != null) {
             resultList.add(which.apply(nextTile));
             nextTile = tiles[row += d.getDeltaRow()][col += d.getDeltaCol()];
@@ -273,6 +272,9 @@ public class Grid {
      * @return the tile at the specified row and column
      */
     public Tile get(int row, int col) {
+        if (row >= size || col >= size || row <= 0 || col <= 0) {
+            return null;
+        }
         return tiles[row][col];
     }
 
