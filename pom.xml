@@ -6,7 +6,7 @@
 
     <groupId>g60904.qwirkle</groupId>
     <artifactId>g60904.qwirkle</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <packaging>jar</packaging>
     <properties>
         <maven.compiler.source>18</maven.compiler.source>
