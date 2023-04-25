@@ -65,6 +65,8 @@ public class App {
             View.displayError("The number of parameters entered is incorrect. Please try again.");
         } catch (NumberFormatException e) {
             View.displayError("The parameters entered must be consistent integers. Please try again.");
+        } catch (IndexOutOfBoundsException e) {
+            View.displayError("The position of the tile in the user's hand does not correspond to any known.");
         }
         return restart;
     }
@@ -84,6 +86,8 @@ public class App {
             View.displayError("The number of parameters entered is incorrect. Please try again.");
         } catch (NumberFormatException e) {
             View.displayError("The parameters entered must be consistent integers. Please try again.");
+        } catch (IndexOutOfBoundsException e) {
+            View.displayError("The position of the tile in the user's hand does not correspond to any known.");
         }
         return restart;
     }
@@ -106,6 +110,8 @@ public class App {
             View.displayError("The number of parameters entered is incorrect. Please try again.");
         } catch (NumberFormatException e) {
             View.displayError("The parameters entered must be consistent integers. Please try again.");
+        }  catch (IndexOutOfBoundsException e) {
+            View.displayError("The position of the tile in the user's hand does not correspond to any known.");
         }
         return restart;
     }
@@ -124,6 +130,8 @@ public class App {
             View.displayError("The number of parameters entered is incorrect. Please try again.");
         } catch (NumberFormatException e) {
             View.displayError("The parameters entered must be consistent integers. Please try again.");
+        }  catch (IndexOutOfBoundsException e) {
+            View.displayError("The position of the tile in the user's hand does not correspond to any known.");
         }
         return restart;
     }
@@ -139,9 +147,8 @@ public class App {
             case "r" -> Direction.RIGHT;
             case "u" -> Direction.UP;
             case "d" -> Direction.DOWN;
-            default ->
-                    throw new QwirkleException("The direction you entered does not match with any known direction. "
-                            + "Please try again.");
+            default -> throw new QwirkleException("The direction you entered does not match with any known direction. "
+                    + "Please try again.");
         };
     }
 }
