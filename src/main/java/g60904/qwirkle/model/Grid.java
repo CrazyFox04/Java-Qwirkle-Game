@@ -127,25 +127,27 @@ public class Grid {
         int[] copyOfLimits = Arrays.copyOf(actualLimits, actualLimits.length);
         var row = line[0].row();
         var col = line[0].col();
+        var numberOfTilesPlaced = 0;
         try {
             for (TileAtPosition tile : line) {
                 if (tile.row() == row || tile.col() == col) {
                     add(tile.row(), tile.col(), tile.tile());
                     modifyLimits(tile.row(), tile.col());
+                    numberOfTilesPlaced++;
                 } else {
                     throw new QwirkleException("The tile need to be played on same line or column");
                 }
             }
         } catch (QwirkleException e) {
-            removeTilesDueToException(line);
+            removeTilesDueToException(line, numberOfTilesPlaced);
             actualLimits = copyOfLimits;
             throw new QwirkleException(e.getMessage());
         }
     }
 
-    private void removeTilesDueToException(TileAtPosition[] tile) {
-        for (TileAtPosition tileAtPosition : tile) {
-            tiles[tileAtPosition.row()][tileAtPosition.col()] = null;
+    private void removeTilesDueToException(TileAtPosition[] tile, int numberOfTilesPLaced) {
+        for (int i = 0; i < numberOfTilesPLaced; i++) {
+            tiles[tile[i].row()][tile[i].col()] = null;
         }
     }
 
