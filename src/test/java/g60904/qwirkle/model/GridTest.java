@@ -1,6 +1,8 @@
 package g60904.qwirkle.model;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -19,7 +21,7 @@ class GridTest {
      * a Blue Cross Tile at (45, 44),
      * a Blue Diamond Tile at (45, 43)
      */
-    private void addSomeTiles_FirstAdd() {
+    private void addSomeTiles_FirstAdd_SameColor() {
         myGrid.firstAdd(
                 Direction.LEFT,
                 new Tile(Color.BLUE, Shape.PLUS),
@@ -28,157 +30,278 @@ class GridTest {
         );
     }
 
-    @Test
-    void firstAddTest_oneTileOK() {
+    /**
+     * Add some Tile for the first time in a game.
+     * It adds a Blue Plus Tile at (45, 45),
+     * a Red Plus Tile at (45, 44),
+     * a Green Plus Tile at (45, 43)
+     */
+    private void addSomeTiles_FirstAdd_SameShape() {
         myGrid.firstAdd(
                 Direction.LEFT,
-                new Tile(Color.BLUE, Shape.PLUS)
-        );
-        assertEquals(myGrid.get(45, 45), new Tile(Color.BLUE, Shape.PLUS));
-    }
-
-    @Test
-    void firstAddTest_MoreTilesOK() {
-        addSomeTiles_FirstAdd();
-        assertEquals(myGrid.get(45, 45), new Tile(Color.BLUE, Shape.PLUS));
-        assertEquals(myGrid.get(45, 44), new Tile(Color.BLUE, Shape.CROSS));
-        assertEquals(myGrid.get(45, 43), new Tile(Color.BLUE, Shape.DIAMOND));
-    }
-
-    @Test
-    void firstAddTest_DifferentColorException() {
-        assertThrows(
-                QwirkleException.class, () -> myGrid.firstAdd(
-                        Direction.LEFT,
-                        new Tile(Color.BLUE, Shape.PLUS),
-                        new Tile(Color.GREEN, Shape.CROSS),
-                        new Tile(Color.BLUE, Shape.DIAMOND)
-                )
+                new Tile(Color.BLUE, Shape.PLUS),
+                new Tile(Color.RED, Shape.PLUS),
+                new Tile(Color.GREEN, Shape.PLUS)
         );
     }
 
+    // Test for constructor
     @Test
-    void firstAddTest_SameShapeException() {
-        assertThrows(
-                QwirkleException.class, () -> myGrid.firstAdd(
-                        Direction.LEFT,
-                        new Tile(Color.BLUE, Shape.PLUS),
+    @Tag("constructor")
+    @DisplayName("Test constructor")
+    void constructorTest() {
+        assertTrue(myGrid.isEmpty());
+        assertArrayEquals(new int[]{46, 44, 44, 46}, myGrid.getActualLimits());
+        assertNull(myGrid.get(45, 45));
+    }
+
+    // Tests for firstAdd
+    @Test
+    @Tag("firstAdd")
+    @DisplayName("Add tiles using firstAdd when the game is not empty")
+    void firstAdd_NotEmpty() {
+        addSomeTiles_FirstAdd_SameColor();
+        assertThrows(QwirkleException.class, () ->
+                myGrid.firstAdd(Direction.DOWN, new Tile(Color.BLUE, Shape.SQUARE))
+        );
+    }
+
+    @Test
+    @Tag("firstAdd")
+    @DisplayName("Add tiles using first add and check if the limits are modified")
+    void firstAdd_modifyLimits() {
+        addSomeTiles_FirstAdd_SameColor();
+        assertArrayEquals(new int[]{46, 42, 44, 46}, myGrid.getActualLimits());
+    }
+
+    @Test
+    @Tag("firstAdd")
+    @DisplayName("Add tiles using first add that cannot be placed and check if they aren't placed")
+    void firstAdd_removeTile() {
+        assertThrows(QwirkleException.class, () ->
+                myGrid.firstAdd(
+                        Direction.DOWN,
+                        new Tile(Color.RED, Shape.DIAMOND),
                         new Tile(Color.BLUE, Shape.DIAMOND),
-                        new Tile(Color.BLUE, Shape.DIAMOND)
+                        new Tile(Color.RED, Shape.DIAMOND)
+                )
+        );
+        assertNull(myGrid.get(45, 45));
+        assertNull(myGrid.get(46, 45));
+        assertNull(myGrid.get(47, 45));
+    }
+
+    // Tests for add a tile method
+
+    @Test
+    @Tag("addATile")
+    @DisplayName("Add a tile using add(r,c,T) where it contains already one")
+    void add_alreadyContainsTile() {
+        addSomeTiles_FirstAdd_SameColor();
+        assertThrows(QwirkleException.class, () ->
+                myGrid.add(45, 44, new Tile(Color.BLUE, Shape.SQUARE))
+        );
+    }
+
+    @Test
+    @Tag("addATile")
+    @DisplayName("Add a tile using add(r,c,T) where it cannot be placed")
+    void add_cannotBePlaced() {
+        addSomeTiles_FirstAdd_SameColor();
+        assertThrows(QwirkleException.class, () ->
+                myGrid.add(30, 30, new Tile(Color.BLUE, Shape.CROSS))
+        );
+        assertNull(myGrid.get(30, 30));
+    }
+
+    @Test
+    @Tag("addATile")
+    @DisplayName("Add a tile and check if its placed")
+    void add_oneTile() {
+        addSomeTiles_FirstAdd_SameColor();
+        var myTile = new Tile(Color.BLUE, Shape.SQUARE);
+        myGrid.add(45, 46, myTile);
+        assertEquals(myTile, myGrid.get(45, 46));
+    }
+
+    @Test
+    @Tag("addATile")
+    @DisplayName("Add a tile and check if limits are updated")
+    void add_checkLimits() {
+        addSomeTiles_FirstAdd_SameColor();
+        myGrid.add(45, 46, new Tile(Color.BLUE, Shape.SQUARE));
+        assertArrayEquals(new int[]{46, 42, 44, 47}, myGrid.getActualLimits());
+    }
+
+    // Tests for add some tiles
+
+    @Test
+    @Tag("addSomeTiles")
+    @DisplayName("Add some tiles that cannot be placed")
+    void addSomeTiles_isRemove_isThrown() {
+        addSomeTiles_FirstAdd_SameColor();
+        assertThrows(QwirkleException.class, () ->
+                myGrid.add(45, 46, Direction.DOWN,
+                        new Tile(Color.BLUE, Shape.SQUARE),
+                        new Tile(Color.YELLOW, Shape.SQUARE),
+                        new Tile(Color.PURPLE, Shape.SQUARE),
+                        new Tile(Color.RED, Shape.DIAMOND)
+                )
+        );
+        assertNull(myGrid.get(45, 46));
+        assertNull(myGrid.get(46, 46));
+        assertNull(myGrid.get(47, 46));
+        assertNull(myGrid.get(48, 46));
+    }
+
+    @Test
+    @Tag("addSomeTiles")
+    @DisplayName("Add some tiles and check if limits are updated")
+    void addSomeTiles_checkLimits() {
+        addSomeTiles_FirstAdd_SameColor();
+        myGrid.add(45, 46, Direction.UP,
+                new Tile(Color.BLUE, Shape.SQUARE),
+                new Tile(Color.YELLOW, Shape.SQUARE),
+                new Tile(Color.PURPLE, Shape.SQUARE),
+                new Tile(Color.RED, Shape.SQUARE)
+        );
+        assertArrayEquals(new int[]{46, 42, 41, 47}, myGrid.getActualLimits());
+    }
+
+    // Tests for add Tiles at pos
+
+    @Test
+    @Tag("addTilesAtPos")
+    @DisplayName("Add tiles at pos and check if limits are updated")
+    void addTilesAtPos_checkLimits() {
+        addSomeTiles_FirstAdd_SameColor();
+        myGrid.add(
+                new TileAtPosition(45, 46, new Tile(Color.BLUE, Shape.SQUARE)),
+                new TileAtPosition(45, 42, new Tile(Color.BLUE, Shape.STAR))
+        );
+        assertArrayEquals(new int[]{46, 41, 44, 47}, myGrid.getActualLimits());
+    }
+
+    @Test
+    @Tag("addTilesAtPos")
+    @DisplayName("Add tiles at pos that cannot be placed")
+    void addTilesAtPos_isRemove_isThrown() {
+        addSomeTiles_FirstAdd_SameColor();
+        assertThrows(QwirkleException.class, () ->
+                myGrid.add(
+                        new TileAtPosition(45, 46, new Tile(Color.BLUE, Shape.STAR)),
+                        new TileAtPosition(44, 44, new Tile(Color.RED, Shape.CROSS))
+                )
+        );
+        assertNull(myGrid.get(45, 46));
+        assertNull(myGrid.get(44, 44));
+    }
+
+    @Test
+    @Tag("removeTileAtPos")
+    @DisplayName("Check that tiles are removed")
+    void removeTilesDueToException_isRemove() {
+        addSomeTiles_FirstAdd_SameColor();
+
+    }
+
+    // Test getter
+
+    @Test
+    @Tag("getter")
+    @DisplayName("Check getter for limits")
+    void getActualLimits() {
+        assertArrayEquals(new int[]{46, 44, 44, 46}, myGrid.getActualLimits());
+    }
+
+    // Tests checking nearby lines
+
+    @Test
+    @Tag("checkNearbyLines")
+    @DisplayName("Check nearby lines for alone Tile")
+    void checkLineInDirection_alone() {
+        addSomeTiles_FirstAdd_SameColor();
+        assertThrows(QwirkleException.class, () ->
+                myGrid.add(21, 23, new Tile(Color.RED, Shape.DIAMOND))
+        );
+    }
+
+    @Test
+    @Tag("checkNearbyLines")
+    @DisplayName("Check line for up a tile")
+    void checkLineInDirection_up() {
+        addSomeTiles_FirstAdd_SameColor();
+        assertDoesNotThrow(() ->
+                myGrid.add(44, 44, Direction.UP,
+                        new Tile(Color.BLUE, Shape.ROUND),
+                        new Tile(Color.BLUE, Shape.SQUARE)
                 )
         );
     }
 
     @Test
-    void firstAddTest_DifferentColorSameShapeException() {
-        assertThrows(
-                QwirkleException.class, () -> myGrid.firstAdd(
-                        Direction.LEFT,
-                        new Tile(Color.GREEN, Shape.PLUS),
-                        new Tile(Color.BLUE, Shape.DIAMOND),
-                        new Tile(Color.BLUE, Shape.DIAMOND)
+    @Tag("checkNearbyLines")
+    @DisplayName("Check line for left a tile")
+    void checkLineInDirection_left() {
+        addSomeTiles_FirstAdd_SameColor();
+        assertDoesNotThrow(() ->
+                myGrid.add(45, 42, Direction.LEFT,
+                        new Tile(Color.BLUE, Shape.ROUND),
+                        new Tile(Color.BLUE, Shape.STAR)
                 )
         );
     }
 
     @Test
-    void addTest_DownATile_SameColor() {
-        addSomeTiles_FirstAdd();
-        myGrid.add(46, 44, new Tile(Color.BLUE, Shape.ROUND));
-        assertEquals(myGrid.get(46, 44), new Tile(Color.BLUE, Shape.ROUND));
+    @Tag("checkNearbyLines")
+    @DisplayName("Check line for down a tile")
+    void checkLineInDirection_down() {
+        addSomeTiles_FirstAdd_SameColor();
+        assertDoesNotThrow(() ->
+                myGrid.add(46, 44, new Tile(Color.BLUE, Shape.ROUND))
+        );
     }
 
     @Test
-    void addTest_UpATile_SameColor() {
-        addSomeTiles_FirstAdd();
-        myGrid.add(44, 44, new Tile(Color.BLUE, Shape.ROUND));
-        assertEquals(myGrid.get(44, 44), new Tile(Color.BLUE, Shape.ROUND));
+    @Tag("checkNearbyLines")
+    @DisplayName("Check line for right a tile")
+    void checkLineInDirection_right() {
+        addSomeTiles_FirstAdd_SameColor();
+        assertDoesNotThrow(() ->
+                myGrid.add(45, 46, Direction.RIGHT,
+                        new Tile(Color.BLUE, Shape.ROUND),
+                        new Tile(Color.BLUE, Shape.STAR)
+                )
+        );
+    }
+
+    // Given tests
+
+    @Test
+    void firstAdd_cannot_be_called_twice() {
+        Tile redcross = new Tile(Color.RED, Shape.CROSS);
+        Tile reddiamond = new Tile(Color.RED, Shape.DIAMOND);
+        myGrid.firstAdd(Direction.UP, redcross, reddiamond);
+        assertThrows(QwirkleException.class, () -> myGrid.firstAdd(Direction.DOWN, redcross, reddiamond));
     }
 
     @Test
-    void addTest_LeftATile_SameColor() {
-        addSomeTiles_FirstAdd();
-        myGrid.add(45, 42, new Tile(Color.BLUE, Shape.ROUND));
-        assertEquals(myGrid.get(45, 42), new Tile(Color.BLUE, Shape.ROUND));
+    void firstAdd_must_be_called_first_simple() {
+        Tile redcross = new Tile(Color.RED, Shape.CROSS);
+        assertThrows(QwirkleException.class, () -> myGrid.add(0, 0, redcross));
     }
 
     @Test
-    void addTest_RightATile_SameColor() {
-        addSomeTiles_FirstAdd();
-        myGrid.add(45, 46, new Tile(Color.BLUE, Shape.ROUND));
-        assertEquals(myGrid.get(45, 46), new Tile(Color.BLUE, Shape.ROUND));
+    @DisplayName("get outside the grid should return null, not throw")
+    void can_get_tile_outside_virtual_grid() {
+        assertDoesNotThrow(() -> myGrid.get(-250, 500));
+        assertNull(myGrid.get(-250, 500));
     }
 
-    @Test
-    void addTest_NoNeighboursTile() {
-        assertThrows(QwirkleException.class, () -> myGrid.add(
-                6, 8, new Tile(Color.ORANGE, Shape.STAR)
-        ));
-    }
+    // Rule based tests
 
     @Test
-    void addTest_NotSameColorAndShape() {
-        addSomeTiles_FirstAdd();
-        assertThrows(QwirkleException.class, () -> myGrid.add(
-                45, 42, new Tile(Color.GREEN, Shape.STAR)
-        ));
-    }
-
-    @Test
-    void addTest_UpATile_SameShape() {
-        addSomeTiles_FirstAdd();
-        myGrid.add(44, 45, new Tile(Color.GREEN, Shape.PLUS));
-        assertEquals(myGrid.get(44, 45), new Tile(Color.GREEN, Shape.PLUS));
-    }
-
-    @Test
-    void addTest_DownATile_SameShape() {
-        addSomeTiles_FirstAdd();
-        myGrid.add(46, 45, new Tile(Color.GREEN, Shape.PLUS));
-        assertEquals(myGrid.get(46, 45), new Tile(Color.GREEN, Shape.PLUS));
-    }
-
-    @Test
-    void addTest_LeftATile_SameShape() {
-        addSomeTiles_FirstAdd();
-        assertThrows(QwirkleException.class, () -> myGrid.add(45, 42, new Tile(Color.GREEN, Shape.DIAMOND)));
-    }
-
-    @Test
-    void addTest_RightATile_SameShape() {
-        addSomeTiles_FirstAdd();
-        assertThrows(QwirkleException.class, () -> myGrid.add(45, 46, new Tile(Color.GREEN, Shape.PLUS)));
-    }
-
-    @Test
-    void addTest_TileBetweenTwoTiles_JoinTwoTiles() {
-        addSomeTiles_FirstAdd();
-        myGrid.add(46, 43, new Tile(Color.BLUE, Shape.STAR));
-        myGrid.add(47, 43, new Tile(Color.BLUE, Shape.PLUS));
-        myGrid.add(47, 44, new Tile(Color.BLUE, Shape.STAR));
-        myGrid.add(47, 45, new Tile(Color.BLUE, Shape.ROUND));
-        myGrid.add(46, 45, new Tile(Color.BLUE, Shape.SQUARE));
-        assertEquals(myGrid.get(46, 45), new Tile(Color.BLUE, Shape.SQUARE));
-    }
-
-    @Test
-    void addTest_TileBetweenTwoTiles_() {
-        addSomeTiles_FirstAdd();
-        myGrid.add(46, 43, new Tile(Color.BLUE, Shape.STAR));
-        myGrid.add(47, 43, new Tile(Color.BLUE, Shape.CROSS));
-        myGrid.add(48, 43, new Tile(Color.BLUE, Shape.SQUARE));
-        myGrid.add(48, 44, new Tile(Color.BLUE, Shape.STAR));
-        myGrid.add(48, 45, new Tile(Color.BLUE, Shape.ROUND));
-        myGrid.add(49, 45, new Tile(Color.BLUE, Shape.PLUS));
-        myGrid.add(47, 45, new Tile(Color.BLUE, Shape.SQUARE));
-
-        assertThrows(QwirkleException.class, () -> myGrid.add(
-                46, 45, new Tile(Color.BLUE, Shape.CROSS)
-        ));
-    }
-
-    // Rules Test
-    @Test
+    @Tag("rules")
     void rules_Sonia_a() {
         var t1 = new Tile(Color.RED, Shape.ROUND);
         var t2 = new Tile(Color.RED, Shape.DIAMOND);
@@ -190,6 +313,7 @@ class GridTest {
     }
 
     @Test
+    @Tag("rules")
     void rules_sonia_a_adapted_to_fail() {
         var t1 = new Tile(Color.RED, Shape.ROUND);
         var t2 = new Tile(Color.RED, Shape.DIAMOND);
@@ -203,6 +327,7 @@ class GridTest {
     }
 
     @Test
+    @Tag("rules")
     void rules_Cedric_b() {
         rules_Sonia_a();
         var t1 = new Tile(Color.RED, Shape.SQUARE);
@@ -215,6 +340,7 @@ class GridTest {
     }
 
     @Test
+    @Tag("rules")
     void rules_Cedric_b_adapted_to_fail() {
         rules_Sonia_a();
         var t1 = new Tile(Color.RED, Shape.SQUARE);
@@ -229,6 +355,7 @@ class GridTest {
     }
 
     @Test
+    @Tag("rules")
     void rules_Elvire_c() {
         rules_Cedric_b();
         var t1 = new Tile(Color.BLUE, Shape.ROUND);
@@ -237,6 +364,7 @@ class GridTest {
     }
 
     @Test
+    @Tag("rules")
     void rules_Elvire_c_adapted_to_fail() {
         rules_Cedric_b();
         var t1 = new Tile(Color.BLUE, Shape.STAR);
@@ -247,6 +375,7 @@ class GridTest {
     }
 
     @Test
+    @Tag("rules")
     void rules_Vincent_d() {
         rules_Elvire_c();
         var t1 = new Tile(Color.GREEN, Shape.PLUS);
@@ -257,6 +386,7 @@ class GridTest {
     }
 
     @Test
+    @Tag("rules")
     void rules_Vincent_d_adapted_to_fail() {
         rules_Elvire_c();
         var t1 = new Tile(Color.GREEN, Shape.PLUS);
@@ -269,6 +399,7 @@ class GridTest {
     }
 
     @Test
+    @Tag("rules")
     void rules_Sonia_e() {
         rules_Vincent_d();
         var t1 = new TileAtPosition(42, 44, new Tile(Color.GREEN, Shape.STAR));
@@ -279,6 +410,7 @@ class GridTest {
     }
 
     @Test
+    @Tag("rules")
     void rules_Sonia_e_adapted_to_fail() {
         rules_Vincent_d();
         var t1 = new TileAtPosition(42, 44, new Tile(Color.GREEN, Shape.STAR));
@@ -291,6 +423,7 @@ class GridTest {
     }
 
     @Test
+    @Tag("rules")
     void rules_Cedric_f() {
         rules_Sonia_e();
         var t1 = new Tile(Color.ORANGE, Shape.SQUARE);
@@ -301,6 +434,7 @@ class GridTest {
     }
 
     @Test
+    @Tag("rules")
     void rules_Cedric_f_adapted_to_fail() {
         rules_Sonia_e();
         var t1 = new Tile(Color.ORANGE, Shape.SQUARE);
@@ -313,6 +447,7 @@ class GridTest {
     }
 
     @Test
+    @Tag("rules")
     void rules_Elvire_g() {
         rules_Cedric_f();
         var t1 = new Tile(Color.YELLOW, Shape.STAR);
@@ -321,6 +456,7 @@ class GridTest {
     }
 
     @Test
+    @Tag("rules")
     void rules_Elvire_g_adapted_to_fail() {
         rules_Cedric_f();
         var t1 = new Tile(Color.YELLOW, Shape.STAR);
@@ -333,6 +469,7 @@ class GridTest {
     }
 
     @Test
+    @Tag("rules")
     void rules_Vincent_h() {
         rules_Elvire_g();
         var t1 = new Tile(Color.ORANGE, Shape.CROSS);
@@ -343,6 +480,7 @@ class GridTest {
     }
 
     @Test
+    @Tag("rules")
     void rules_Vincent_h_adapted_to_fail() {
         rules_Elvire_g();
         var t1 = new Tile(Color.ORANGE, Shape.CROSS);
@@ -355,6 +493,7 @@ class GridTest {
     }
 
     @Test
+    @Tag("rules")
     void rules_Sonia_i() {
         rules_Vincent_h();
         var t1 = new Tile(Color.YELLOW, Shape.DIAMOND);
@@ -365,6 +504,7 @@ class GridTest {
     }
 
     @Test
+    @Tag("rules")
     void rules_Sonia_i_adapted_to_fail() {
         rules_Vincent_h();
         var t1 = new Tile(Color.YELLOW, Shape.DIAMOND);
@@ -377,6 +517,7 @@ class GridTest {
     }
 
     @Test
+    @Tag("rules")
     void rules_Cedric_j() {
         rules_Sonia_i();
         var t1 = new Tile(Color.RED, Shape.STAR);
@@ -385,6 +526,7 @@ class GridTest {
     }
 
     @Test
+    @Tag("rules")
     void rules_Cedric_j_adapted_to_fail() {
         rules_Sonia_i();
         var t1 = new Tile(Color.GREEN, Shape.PLUS);
@@ -395,6 +537,7 @@ class GridTest {
     }
 
     @Test
+    @Tag("rules")
     void rules_Elvire_k() {
         rules_Cedric_j();
         var t1 = new Tile(Color.BLUE, Shape.CROSS);
@@ -407,6 +550,7 @@ class GridTest {
     }
 
     @Test
+    @Tag("rules")
     void rules_Elvire_k_adapted_to_fail() {
         rules_Cedric_j();
         var t1 = new Tile(Color.BLUE, Shape.CROSS);
@@ -421,6 +565,7 @@ class GridTest {
     }
 
     @Test
+    @Tag("rules")
     void rules_Vincent_l() {
         rules_Elvire_k();
         var t1 = new Tile(Color.YELLOW, Shape.SQUARE);
@@ -431,6 +576,7 @@ class GridTest {
     }
 
     @Test
+    @Tag("rules")
     void rules_Vincent_l_adapted_to_fail() {
         rules_Elvire_k();
         var t1 = new Tile(Color.YELLOW, Shape.SQUARE);
@@ -440,5 +586,316 @@ class GridTest {
         });
         assertNull(myGrid.get(46, 49));
         assertNull(myGrid.get(47, 49));
+    }
+
+    // Case tests
+
+    @Test
+    @Tag("cases")
+    @DisplayName("FirstAdd - Add one tile")
+    void cases_firstAdd_oneTile() {
+        var tile = new Tile(Color.BLUE, Shape.STAR);
+        assertDoesNotThrow(() ->
+                myGrid.firstAdd(Direction.DOWN, tile)
+        );
+        assertEquals(tile, myGrid.get(45, 45));
+    }
+
+    @Test
+    @Tag("cases")
+    @DisplayName("FirstAdd - Add tiles - Same color, Same shape")
+    void cases_firstAdd_tiles_SameShapeSameColor() {
+        var tile1 = new Tile(Color.BLUE, Shape.STAR);
+        var tile2 = new Tile(Color.BLUE, Shape.STAR);
+        for (Direction direction : Direction.values()) {
+            myGrid = new Grid();
+            assertThrows(QwirkleException.class, () ->
+                    myGrid.firstAdd(direction, tile1, tile2)
+            );
+            assertNull(myGrid.get(45, 45));
+            assertNull(myGrid.get(45 + direction.getDeltaRow(), 45 + direction.getDeltaCol()));
+        }
+    }
+
+    @Test
+    @Tag("cases")
+    @DisplayName("FirstAdd - Add tiles - Same color, Diff shape")
+    void cases_firstAdd_tiles_DiffShapeSameColor() {
+        var tile1 = new Tile(Color.BLUE, Shape.STAR);
+        var tile2 = new Tile(Color.BLUE, Shape.SQUARE);
+        for (Direction direction : Direction.values()) {
+            myGrid = new Grid();
+            assertDoesNotThrow(() ->
+                    myGrid.firstAdd(direction, tile1, tile2)
+            );
+            assertEquals(tile1, myGrid.get(45, 45));
+            assertEquals(tile2, myGrid.get(45 + direction.getDeltaRow(), 45 + direction.getDeltaCol()));
+        }
+    }
+
+    @Test
+    @Tag("cases")
+    @DisplayName("FirstAdd - Add tiles - Diff color, Same shape")
+    void cases_firstAdd_tiles_SameShapeDiffColor() {
+        var tile1 = new Tile(Color.BLUE, Shape.STAR);
+        var tile2 = new Tile(Color.GREEN, Shape.STAR);
+        for (Direction direction : Direction.values()) {
+            myGrid = new Grid();
+            assertDoesNotThrow(() ->
+                    myGrid.firstAdd(direction, tile1, tile2)
+            );
+            assertEquals(tile1, myGrid.get(45, 45));
+            assertEquals(tile2, myGrid.get(45 + direction.getDeltaRow(), 45 + direction.getDeltaCol()));
+        }
+    }
+
+    @Test
+    @Tag("cases")
+    @DisplayName("Add - Add one tile - Complete line same color, diff shape")
+    void cases_add_tile_SameColorDiffShape() {
+        addSomeTiles_FirstAdd_SameColor();
+        var tile = new Tile(Color.BLUE, Shape.SQUARE);
+        var tile2 = new Tile(Color.BLUE, Shape.STAR);
+        assertDoesNotThrow(() -> {
+            myGrid.add(44, 43, tile);
+            myGrid.add(45, 42, tile);
+            myGrid.add(46, 43, tile2);
+        });
+        assertEquals(tile, myGrid.get(44, 43));
+        assertEquals(tile, myGrid.get(45, 42));
+        assertEquals(tile2, myGrid.get(46, 43));
+    }
+
+    @Test
+    @Tag("cases")
+    @DisplayName("Add - Add one tile - Complete line diff color, same shape")
+    void cases_add_tile_DiffColorSameShape() {
+        addSomeTiles_FirstAdd_SameColor();
+        var tile = new Tile(Color.RED, Shape.DIAMOND);
+        var tile2 = new Tile(Color.GREEN, Shape.CROSS);
+        var tile3 = new Tile(Color.YELLOW, Shape.PLUS);
+        assertDoesNotThrow(() -> {
+            myGrid.add(46, 45, tile3);
+            myGrid.add(44, 44, tile2);
+            myGrid.add(46, 43, tile);
+        });
+        assertEquals(tile, myGrid.get(46, 43));
+        assertEquals(tile2, myGrid.get(44, 44));
+        assertEquals(tile3, myGrid.get(46, 45));
+    }
+
+    @Test
+    @Tag("cases")
+    @DisplayName("Add - Add one tile - Complete line diff color, diff shape")
+    void cases_add_tile_DiffColorDiffShape() {
+        addSomeTiles_FirstAdd_SameColor();
+        var tile = new Tile(Color.RED, Shape.DIAMOND);
+        var tile2 = new Tile(Color.GREEN, Shape.CROSS);
+        var tile3 = new Tile(Color.YELLOW, Shape.SQUARE);
+        assertThrows(QwirkleException.class, () -> {
+            myGrid.add(45, 42, tile);
+        });
+        assertThrows(QwirkleException.class, () -> {
+            myGrid.add(44, 43, tile2);
+        });
+        assertThrows(QwirkleException.class, () -> {
+            myGrid.add(46, 45, tile3);
+        });
+        assertNull(myGrid.get(45, 42));
+        assertNull(myGrid.get(44, 43));
+        assertNull(myGrid.get(46, 45));
+    }
+
+    @Test
+    @Tag("cases")
+    @DisplayName("Add - Add one tile - Complete line same color, same shape")
+    void cases_add_tile_SameColorSameShape() {
+        addSomeTiles_FirstAdd_SameColor();
+        var tile = new Tile(Color.BLUE, Shape.DIAMOND);
+        var tile2 = new Tile(Color.BLUE, Shape.CROSS);
+        var tile3 = new Tile(Color.BLUE, Shape.PLUS);
+        assertThrows(QwirkleException.class, () -> {
+            myGrid.add(44, 43, tile);
+        });
+        assertThrows(QwirkleException.class, () -> {
+            myGrid.add(46, 44, tile2);
+        });
+        assertThrows(QwirkleException.class, () -> {
+            myGrid.add(46, 45, tile3);
+        });
+        assertNull(myGrid.get(44, 43));
+        assertNull(myGrid.get(46, 44));
+        assertNull(myGrid.get(46, 45));
+    }
+
+    @Test
+    @Tag("cases")
+    @DisplayName("Add - Add one tile - Pos already used")
+    void cases_add_tile_posAlreadyUsed() {
+        addSomeTiles_FirstAdd_SameShape();
+        var tile = new Tile(Color.RED, Shape.STAR);
+        var savedTile = myGrid.get(45, 45);
+        assertThrows(QwirkleException.class, () ->
+                myGrid.add(45, 45, tile)
+        );
+        assertEquals(savedTile, myGrid.get(45, 45));
+    }
+
+    @Test
+    @Tag("cases")
+    @DisplayName("Add - Add tiles - Add a line diff shape, same color")
+    void cases_add_tiles_DiffShapeSameColor() {
+        addSomeTiles_FirstAdd_SameColor();
+        var tile1 = new Tile(Color.GREEN, Shape.PLUS);
+        var tile2 = new Tile(Color.GREEN, Shape.CROSS);
+        assertDoesNotThrow(() ->
+                myGrid.add(44, 45, Direction.LEFT, tile1, tile2)
+        );
+        assertEquals(tile1, myGrid.get(44, 45));
+        assertEquals(tile2, myGrid.get(44, 44));
+    }
+
+    @Test
+    @Tag("cases")
+    @DisplayName("Add - Add tiles - Add a line same shape, diff color")
+    void cases_add_tiles_SameShapeDiffColor() {
+        addSomeTiles_FirstAdd_SameColor();
+        var tile1 = new Tile(Color.GREEN, Shape.PLUS);
+        var tile2 = new Tile(Color.RED, Shape.PLUS);
+        assertDoesNotThrow(() ->
+                myGrid.add(44, 45, Direction.UP, tile1, tile2)
+        );
+        assertEquals(tile1, myGrid.get(44, 45));
+        assertEquals(tile2, myGrid.get(43, 45));
+    }
+
+    @Test
+    @Tag("cases")
+    @DisplayName("Add - Add tiles - Add a line same shape, same color")
+    void cases_add_tiles_SameShapeSameColor() {
+        addSomeTiles_FirstAdd_SameColor();
+        var tile1 = new Tile(Color.GREEN, Shape.PLUS);
+        var tile2 = new Tile(Color.BLUE, Shape.PLUS);
+        assertThrows(QwirkleException.class, () ->
+                myGrid.add(44, 45, Direction.UP, tile1, tile2)
+        );
+        assertNull(myGrid.get(44, 45));
+        assertNull(myGrid.get(43, 45));
+    }
+
+    @Test
+    @Tag("cases")
+    @DisplayName("Add - Add tiles - Pos already used")
+    void cases_add_tiles_posAlreadyUsed() {
+        addSomeTiles_FirstAdd_SameShape();
+        var tile1 = new Tile(Color.GREEN, Shape.PLUS);
+        var tile2 = new Tile(Color.BLUE, Shape.PLUS);
+        var savedTile = myGrid.get(45, 45);
+        assertThrows(QwirkleException.class, () ->
+                myGrid.add(45, 45, Direction.RIGHT, tile1, tile2)
+        );
+        assertEquals(savedTile, myGrid.get(45, 45));
+        assertNull(myGrid.get(45, 46));
+    }
+
+    @Test
+    @Tag("cases")
+    @DisplayName("Add - Add tiles at pos - Same Color")
+    void cases_add_tilesAtPos_sameColor() {
+        addSomeTiles_FirstAdd_SameColor();
+        var tile1 = new Tile(Color.BLUE, Shape.STAR);
+        var tile2 = new Tile(Color.BLUE, Shape.ROUND);
+        var tileAtPos1 = new TileAtPosition(45, 46, tile1);
+        var tileAtPos2 = new TileAtPosition(45, 42, tile2);
+        assertDoesNotThrow(() ->
+                myGrid.add(tileAtPos1, tileAtPos2)
+        );
+        assertEquals(tile1, myGrid.get(45, 46));
+        assertEquals(tile2, myGrid.get(45, 42));
+    }
+
+    @Test
+    @Tag("cases")
+    @DisplayName("Add - Add tiles at pos - Same Shape")
+    void cases_add_tilesAtPos_sameShape() {
+        addSomeTiles_FirstAdd_SameShape();
+        var tile1 = new Tile(Color.YELLOW, Shape.PLUS);
+        var tile2 = new Tile(Color.PURPLE, Shape.PLUS);
+        var tileAtPos1 = new TileAtPosition(45, 46, tile1);
+        var tileAtPos2 = new TileAtPosition(45, 42, tile2);
+        assertDoesNotThrow(() ->
+                myGrid.add(tileAtPos1, tileAtPos2)
+        );
+        assertEquals(tile1, myGrid.get(45, 46));
+        assertEquals(tile2, myGrid.get(45, 42));
+    }
+
+    @Test
+    @Tag("cases")
+    @DisplayName("Add - Add tiles at pos - Diff Shape, Diff Color")
+    void cases_add_tilesAtPos_diffShapeDiffColor() {
+        addSomeTiles_FirstAdd_SameShape();
+        var tile1 = new Tile(Color.YELLOW, Shape.SQUARE);
+        var tile2 = new Tile(Color.PURPLE, Shape.DIAMOND);
+        var tileAtPos1 = new TileAtPosition(45, 46, tile1);
+        var tileAtPos2 = new TileAtPosition(45, 42, tile2);
+        assertThrows(QwirkleException.class, () ->
+                myGrid.add(tileAtPos1, tileAtPos2)
+        );
+        assertNull(myGrid.get(45, 46));
+        assertNull(myGrid.get(45, 42));
+    }
+
+    @Test
+    @Tag("cases")
+    @DisplayName("Add - Add tiles at pos - Pos already used")
+    void cases_add_tilesAtPos_posAlreadyUsed() {
+        addSomeTiles_FirstAdd_SameShape();
+        var tile1 = new Tile(Color.YELLOW, Shape.SQUARE);
+        var tile2 = new Tile(Color.PURPLE, Shape.DIAMOND);
+        var tileAtPos1 = new TileAtPosition(45, 45, tile1);
+        var tileAtPos2 = new TileAtPosition(45, 43, tile2);
+        var savedShape1 = myGrid.get(45, 45);
+        var savedShape2 = myGrid.get(45, 43);
+        assertThrows(QwirkleException.class, () ->
+                myGrid.add(tileAtPos1, tileAtPos2)
+        );
+        assertEquals(savedShape1, myGrid.get(45, 45));
+        assertEquals(savedShape2, myGrid.get(45, 43));
+    }
+
+    @Test
+    @Tag("cases")
+    @DisplayName("Add - Add tile - Join two lines - Same color")
+    void cases_add_tile_joinTwoLine_sameColor() {
+        addSomeTiles_FirstAdd_SameColor();
+        myGrid.add(46, 43, new Tile(Color.BLUE, Shape.STAR));
+        myGrid.add(47, 43, new Tile(Color.BLUE, Shape.PLUS));
+        myGrid.add(47, 44, new Tile(Color.BLUE, Shape.STAR));
+        myGrid.add(47, 45, new Tile(Color.BLUE, Shape.ROUND));
+        var tile = new Tile(Color.BLUE, Shape.SQUARE);
+        assertDoesNotThrow(() ->
+                myGrid.add(46, 45, tile)
+        );
+        assertEquals(myGrid.get(46, 45), tile);
+    }
+
+    @Test
+    @Tag("cases")
+    @DisplayName("Add - Add tile - Join two lines - Tile Already in a line")
+    void cases_add_tile_joinTwoLine_tileAlreadyInALine() {
+        addSomeTiles_FirstAdd_SameColor();
+        myGrid.add(46, 43, new Tile(Color.BLUE, Shape.STAR));
+        myGrid.add(47, 43, new Tile(Color.BLUE, Shape.CROSS));
+        myGrid.add(48, 43, new Tile(Color.BLUE, Shape.SQUARE));
+        myGrid.add(48, 44, new Tile(Color.BLUE, Shape.STAR));
+        myGrid.add(48, 45, new Tile(Color.BLUE, Shape.ROUND));
+        myGrid.add(49, 45, new Tile(Color.BLUE, Shape.PLUS));
+        myGrid.add(47, 45, new Tile(Color.BLUE, Shape.SQUARE));
+        var tile = new Tile(Color.BLUE, Shape.CROSS);
+        assertThrows(QwirkleException.class, () ->
+                myGrid.add(46, 45, tile)
+        );
+        assertNull(myGrid.get(46, 45));
     }
 }
