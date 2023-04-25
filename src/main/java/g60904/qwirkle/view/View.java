@@ -114,7 +114,7 @@ public class View {
         return playerList;
     }
 
-    static int lireEntier() {
+    private static int lireEntier() {
         while (!clavier.hasNextInt()) {
             clavier.next();
             System.out.print("Please enter an integer greater than or equal to 1 : ");
