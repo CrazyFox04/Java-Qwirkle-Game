@@ -898,4 +898,168 @@ class GridTest {
         );
         assertNull(myGrid.get(46, 45));
     }
+
+    // Point based tests
+
+    @Test
+    @Tag("points")
+    @DisplayName("firstAdd - Add tile")
+    void points_firstAdd_addTile() {
+        assertEquals(1, myGrid.firstAdd(
+                Direction.DOWN, new Tile(Color.BLUE, Shape.ROUND)
+        ));
+    }
+
+    @Test
+    @Tag("points")
+    @DisplayName("firstAdd - Add tiles")
+    void points_firstAdd_addTiles() {
+        assertEquals(2, myGrid.firstAdd(
+                Direction.UP,
+                new Tile(Color.GREEN, Shape.PLUS), new Tile(Color.ORANGE, Shape.PLUS)
+        ));
+    }
+
+    @Test
+    @Tag("points")
+    @DisplayName("firstAdd - Add tiles - Remove, no points")
+    void points_firstAdd_addTiles_remove_noPoints() {
+        assertThrows(QwirkleException.class, () -> myGrid.firstAdd(
+                Direction.UP,
+                new Tile(Color.GREEN, Shape.PLUS), new Tile(Color.ORANGE, Shape.SQUARE)
+        ));
+    }
+
+    @Test
+    @Tag("points")
+    @DisplayName("add - Add tile - Adjacent Two lines")
+    void points_add_addTile_adjacentTwoLines() {
+        addSomeTiles_FirstAdd_SameColor();
+        myGrid.add(44, 45, new Tile(Color.GREEN, Shape.PLUS));
+        assertEquals(4, myGrid.add(44, 44, new Tile(Color.GREEN, Shape.CROSS)));
+    }
+
+    @Test
+    @Tag("points")
+    @DisplayName("add - Add tile - Complete a line")
+    void points_add_addTile_completeALine() {
+        addSomeTiles_FirstAdd_SameColor();
+        assertEquals(4, myGrid.add(45, 42, new Tile(Color.BLUE, Shape.STAR)));
+    }
+
+    @Test
+    @Tag("points")
+    @DisplayName("add - Add tile - Complete a line - QWIRKLE")
+    void points_add_addTile_completeALine_qwirkle() {
+        addSomeTiles_FirstAdd_SameColor();
+        myGrid.add(45, 42, new Tile(Color.BLUE, Shape.STAR));
+        myGrid.add(45, 41, new Tile(Color.BLUE, Shape.ROUND));
+        assertEquals(12, myGrid.add(45, 40, new Tile(Color.BLUE, Shape.SQUARE)));
+    }
+
+    @Test
+    @Tag("points")
+    @DisplayName("add - Add tile - Between two lines")
+    void points_add_addTile_betweenTwoLines() {
+        addSomeTiles_FirstAdd_SameColor();
+        myGrid.add(46, 45, new Tile(Color.RED, Shape.PLUS));
+        myGrid.add(47, 45, new Tile(Color.YELLOW, Shape.PLUS));
+        myGrid.add(48, 45, new Tile(Color.PURPLE, Shape.PLUS));
+        myGrid.add(48, 44, new Tile(Color.ORANGE, Shape.PLUS));
+        myGrid.add(48, 43, new Tile(Color.BLUE, Shape.PLUS));
+        myGrid.add(47, 43, new Tile(Color.BLUE, Shape.STAR));
+        assertEquals(4, myGrid.add(46, 43, new Tile(Color.BLUE, Shape.CROSS)));
+    }
+
+    @Test
+    @Tag("points")
+    @DisplayName("add - Add tile - Between three lines")
+    void points_add_addTile_betweenThreeLines() {
+        myGrid.firstAdd(Direction.DOWN, new Tile(Color.BLUE, Shape.STAR),
+                new Tile(Color.BLUE, Shape.CROSS),
+                new Tile(Color.BLUE, Shape.SQUARE));
+        myGrid.add(47, 44, Direction.LEFT, new Tile(Color.BLUE, Shape.PLUS),
+                new Tile(Color.BLUE, Shape.STAR));
+        myGrid.add(46, 43, new Tile(Color.BLUE, Shape.DIAMOND));
+        myGrid.add(46, 42, new Tile(Color.BLUE, Shape.ROUND));
+        myGrid.add(46, 46, new Tile(Color.BLUE, Shape.STAR));
+        assertEquals(7, myGrid.add(46, 44, new Tile(Color.BLUE, Shape.SQUARE)));
+    }
+
+    @Test
+    @Tag("points")
+    @DisplayName("add - Add tile - Between four lines")
+    void points_add_addTile_betweenFourLines() {
+        myGrid.firstAdd(Direction.DOWN, new Tile(Color.BLUE, Shape.STAR),
+                new Tile(Color.BLUE, Shape.CROSS),
+                new Tile(Color.BLUE, Shape.SQUARE));
+        myGrid.add(47, 44, Direction.LEFT, new Tile(Color.BLUE, Shape.PLUS),
+                new Tile(Color.BLUE, Shape.STAR));
+        myGrid.add(46, 43, Direction.UP, new Tile(Color.BLUE, Shape.DIAMOND),
+                new Tile(Color.BLUE, Shape.CROSS));
+        myGrid.add(45, 44, new Tile(Color.BLUE, Shape.ROUND));
+        myGrid.add(46, 42, new Tile(Color.BLUE,Shape.ROUND));
+        myGrid.add(46, 46, new Tile(Color.BLUE, Shape.STAR));
+        assertEquals(8, myGrid.add(46, 44, new Tile(Color.BLUE, Shape.SQUARE)));
+    }
+
+    @Test
+    @Tag("points")
+    @DisplayName("add - Add tiles - Complete a line")
+    void points_add_addTiles_completeALine() {
+        addSomeTiles_FirstAdd_SameColor();
+        assertEquals(5,
+                myGrid.add(45, 42, Direction.LEFT,
+                        new Tile(Color.BLUE, Shape.STAR), new Tile(Color.BLUE, Shape.SQUARE)));
+    }
+
+    @Test
+    @Tag("points")
+    @DisplayName("add - Add tiles - Line Collate to another")
+    void points_add_addTiles_addALine_collateToAnother() {
+        addSomeTiles_FirstAdd_SameShape();
+        myGrid.add(45, 42, new Tile(Color.PURPLE, Shape.PLUS));
+        assertEquals(12,
+                myGrid.add(44, 45, Direction.LEFT,
+                        new Tile(Color.RED, Shape.PLUS), new Tile(Color.GREEN, Shape.PLUS),
+                        new Tile(Color.BLUE, Shape.PLUS), new Tile(Color.ORANGE, Shape.PLUS)));
+    }
+
+    @Test
+    @Tag("points")
+    @DisplayName("addTileAtPosition - Add tiles - Before and after line")
+    void points_addTileAtPos_addTwoTiles_beforeAndAfterLine() {
+        addSomeTiles_FirstAdd_SameColor();
+        assertEquals(5, myGrid.add(
+                new TileAtPosition(45,46, new Tile(Color.BLUE, Shape.SQUARE)),
+                new TileAtPosition(45, 42, new Tile(Color.BLUE, Shape.ROUND))
+                )
+        );
+    }
+
+    @Test
+    @Tag("points")
+    @DisplayName("addTileAtPosition - Add tiles - Next a line ")
+    void points_addTileAtPos_addTwoTiles_nextALine() {
+        addSomeTiles_FirstAdd_SameColor();
+        assertEquals(5, myGrid.add(
+                        new TileAtPosition(45,42, new Tile(Color.BLUE, Shape.SQUARE)),
+                        new TileAtPosition(45, 41, new Tile(Color.BLUE, Shape.ROUND))
+                )
+        );
+    }
+
+    @Test
+    @Tag("points")
+    @DisplayName("addTileAtPosition - Add tile - Between two lines")
+    void points_addTileAtPos_AddATile_betweenTwoLines(){
+        addSomeTiles_FirstAdd_SameColor();
+        myGrid.add(46, 45, new Tile(Color.RED, Shape.PLUS));
+        myGrid.add(47, 45, new Tile(Color.YELLOW, Shape.PLUS));
+        myGrid.add(48, 45, new Tile(Color.PURPLE, Shape.PLUS));
+        myGrid.add(48, 44, new Tile(Color.ORANGE, Shape.PLUS));
+        myGrid.add(48, 43, new Tile(Color.BLUE, Shape.PLUS));
+        myGrid.add(47, 43, new Tile(Color.BLUE, Shape.STAR));
+        assertEquals(4, myGrid.add(new TileAtPosition(46,43, new Tile(Color.BLUE, Shape.CROSS))));
+    }
 }
