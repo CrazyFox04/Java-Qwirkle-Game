@@ -20,6 +20,10 @@ public class Grid {
     private boolean isEmpty;
     private int[] actualLimits;
     private final int size;
+    private HashSet<TileAtPosition> tilesPointList;
+    private int bonusPoint;
+    private Direction dirToPlaceTile;
+    private int leftToPlace;
 
     /**
      * Constructs a new Grid instance with a 91x91 2D array of Tiles and initializes
@@ -30,6 +34,8 @@ public class Grid {
         tiles = new Tile[size][size];
         isEmpty = true;
         actualLimits = new int[]{46, 44, 44, 46};
+        tilesPointList = new HashSet<>();
+        bonusPoint = 0;
     }
 
     /**
@@ -42,7 +48,7 @@ public class Grid {
      * @throws QwirkleException if the grid is not empty or if the added
      *                          Tiles do not comply with the Qwirkle game rules.
      */
-    public void firstAdd(Direction d, Tile... line) {
+    public int firstAdd(Direction d, Tile... line) {
         if (!isEmpty) {
             throw new QwirkleException("This method can only be called when the Grid is empty.");
         }
@@ -61,6 +67,7 @@ public class Grid {
         }
         modifyLimits(d, line.length, 45, 45);
         isEmpty = false;
+        return line.length;
     }
 
     /**
@@ -73,17 +80,23 @@ public class Grid {
      *                          position cannot accept the tile due to the neighboring tiles'
      *                          attributes not matching with the given tile.
      */
-    public void add(int row, int col, Tile tile) throws QwirkleException {
+    public int add(int row, int col, Tile tile) throws QwirkleException {
+        if (!Thread.currentThread().getStackTrace()[2].getMethodName().equals("add")) {
+            resetPreviousPointsCalculation();
+            setPointCalculation(1);
+        }
         if (tiles[row][col] != null) {
             throw new QwirkleException("This position (" + row + ", " + col + ") already contain a tile");
         }
         if (checkNearbyLines(tile, row, col)) {
             tiles[row][col] = tile;
             modifyLimits(row, col);
+            leftToPlace--;
         } else {
             throw new QwirkleException("The position (" + row + ", " + col + ") " +
                     "cannot accept the Tile (" + tile + ").");
         }
+        return pointsCalculator();
     }
 
     /**
@@ -96,7 +109,9 @@ public class Grid {
      * @throws QwirkleException if any of the tiles cannot be placed on the board or
      *                          if a position already contains a tile
      */
-    public void add(int row, int col, Direction d, Tile... line) {
+    public int add(int row, int col, Direction d, Tile... line) {
+        resetPreviousPointsCalculation();
+        setPointCalculation(line.length, d);
         var numberOfTilesPlaced = 0;
         try {
             for (Tile tile : line) {
@@ -107,11 +122,11 @@ public class Grid {
             modifyLimits(d, line.length, row, col);
         } catch (QwirkleException e) {
             remove(row, col, d, numberOfTilesPlaced);
-            String lineType = (d == Direction.LEFT || d == Direction.RIGHT) ? "row" : "column";
             throw new QwirkleException("The position (" + (row + (numberOfTilesPlaced) * d.getDeltaRow())
                     + ", " + (col + (numberOfTilesPlaced) * d.getDeltaCol()) +
                     ") cannot accept the Tile (" + line[numberOfTilesPlaced] + ").\n No tiles have been placed.");
         }
+        return pointsCalculator();
     }
 
 
@@ -123,7 +138,9 @@ public class Grid {
      * @throws QwirkleException if a tile cannot be added to the specified position on the game board.
      */
 
-    public void add(TileAtPosition... line) {
+    public int add(TileAtPosition... line) {
+        resetPreviousPointsCalculation();
+        setPointCalculation(line.length);
         int[] copyOfLimits = Arrays.copyOf(actualLimits, actualLimits.length);
         var row = line[0].row();
         var col = line[0].col();
@@ -133,6 +150,7 @@ public class Grid {
                 if (tile.row() == row || tile.col() == col) {
                     add(tile.row(), tile.col(), tile.tile());
                     modifyLimits(tile.row(), tile.col());
+                    leftToPlace--;
                     numberOfTilesPlaced++;
                 } else {
                     throw new QwirkleException("The tile need to be played on same line or column");
@@ -143,6 +161,7 @@ public class Grid {
             actualLimits = copyOfLimits;
             throw new QwirkleException(e.getMessage());
         }
+        return pointsCalculator();
     }
 
     private void removeTilesDueToException(TileAtPosition[] tile, int numberOfTilesPLaced) {
@@ -163,19 +182,22 @@ public class Grid {
      * @throws QwirkleException if the position does not have any neighboring tiles.
      */
     private boolean checkNearbyLines(Tile tile, int row, int col) {
-        if (surroundingsAreNull(row, col)) {
+        if (checkSurroundings(row, col) == 0) {
             throw new QwirkleException("The Tile (" + row + ", " + col + ") cannot be placed " +
                     "where there is no Tile yet");
-        } else return
-                checkRedundantTiles(
-                        checkLineInDirection(tile, row, col, Direction.UP),
-                        checkLineInDirection(tile, row, col, Direction.DOWN),
-                        tile
-                ) && checkRedundantTiles(
-                        checkLineInDirection(tile, row, col, Direction.LEFT),
-                        checkLineInDirection(tile, row, col, Direction.RIGHT),
-                        tile
-                );
+        } else {
+            tilesPointList.add(new TileAtPosition(row, col, tile));
+            return
+                    checkRedundantTiles(
+                            checkLineInDirection(tile, row, col, Direction.UP),
+                            checkLineInDirection(tile, row, col, Direction.DOWN),
+                            tile
+                    ) && checkRedundantTiles(
+                            checkLineInDirection(tile, row, col, Direction.LEFT),
+                            checkLineInDirection(tile, row, col, Direction.RIGHT),
+                            tile
+                    );
+        }
     }
 
     /**
@@ -195,7 +217,11 @@ public class Grid {
         ArrayList<Object> resultList = new ArrayList<>();
         while (nextTile != null) {
             resultList.add(which.apply(nextTile));
+            tilesPointList.add(new TileAtPosition(row, col, nextTile));
             nextTile = tiles[row += d.getDeltaRow()][col += d.getDeltaCol()];
+        }
+        if (resultList.size() == 5) {
+            bonusPoint += 6;
         }
         return resultList;
     }
@@ -257,13 +283,28 @@ public class Grid {
      * @param col the column index of the position to check
      * @return {@code true} if all surrounding positions are null, {@code false} otherwise
      */
-    private boolean surroundingsAreNull(int row, int col) {
+    private int checkSurroundings(int row, int col) {
+        var directions = new ArrayList<Direction>();
+        var numberOfTiles = 0;
         for (Direction d : Direction.values()) {
             if (get(row + d.getDeltaRow(), col + d.getDeltaCol()) != null) {
-                return false;
+                directions.add(d);
+                numberOfTiles++;
+            } else if (dirToPlaceTile != null && dirToPlaceTile.opposite().equals(d) && leftToPlace > 0) {
+                directions.add(d);
+                numberOfTiles++;
             }
         }
-        return true;
+        if (numberOfTiles > 1) {
+            bonusPoint += directions.size() - 1;
+            if (directions.contains(Direction.UP) && directions.contains(Direction.DOWN)) {
+                bonusPoint--;
+            }
+            if (directions.contains(Direction.LEFT) && directions.contains(Direction.DOWN)) {
+                bonusPoint--;
+            }
+        }
+        return directions.size();
     }
 
     /**
@@ -346,5 +387,25 @@ public class Grid {
         } else if (col >= actualLimits[3]) {
             actualLimits[3]++;
         }
+    }
+
+    private int pointsCalculator() {
+        return tilesPointList.size() + bonusPoint;
+    }
+
+    private void setPointCalculation(int leftToPlace) {
+        this.leftToPlace = leftToPlace;
+        this.dirToPlaceTile = null;
+    }
+
+    private void setPointCalculation(int leftToPlace, Direction dirToPlace) {
+        this.leftToPlace = leftToPlace;
+        this.dirToPlaceTile = dirToPlace;
+    }
+    private void resetPreviousPointsCalculation() {
+        bonusPoint = 0;
+        tilesPointList = new HashSet<>();
+        dirToPlaceTile = null;
+        leftToPlace = 0;
     }
 }
