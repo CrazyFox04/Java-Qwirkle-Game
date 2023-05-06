@@ -17,6 +17,8 @@ public class Player {
      */
     private final List<Tile> tiles;
 
+    private int score;
+
     /**
      * Constructs a new player with the specified name.
      *
@@ -45,6 +47,10 @@ public class Player {
         return Collections.unmodifiableList(tiles);
     }
 
+    public int getScore() {
+        return score;
+    }
+
     /**
      * Refills the player's hand by adding new random tiles from the bag.
      */
@@ -61,5 +67,8 @@ public class Player {
         for (Tile t : ts) {
             tiles.remove(t);
         }
+    }
+    public void addScore(int value) {
+        this.score += value;
     }
 }
