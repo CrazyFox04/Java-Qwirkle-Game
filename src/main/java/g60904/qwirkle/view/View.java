@@ -59,6 +59,7 @@ public class View {
      */
     public static void display(Player player) {
         System.out.println(player.getName() + " it's your turn, " + "you have in your hand (0 - 5) : " + player.getHand());
+        System.out.println("You have " + player.getScore() + " points.");
     }
 
     /**
