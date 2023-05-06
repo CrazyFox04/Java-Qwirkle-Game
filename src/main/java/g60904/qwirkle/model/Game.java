@@ -51,6 +51,9 @@ public class Game {
     public List<Tile> getCurrentPlayerHand() {
         return players[currentPlayer].getHand();
     }
+    public int getCurrentPlayerScore () {
+        return players[currentPlayer].getScore();
+    }
 
     /**
      * Adds the specified tiles to the grid as the first play of the game.
@@ -62,7 +65,7 @@ public class Game {
         var restart = true;
         while (restart) {
             try {
-                grid.firstAdd(d, getTileOfPlayer(is));
+                players[currentPlayer].addScore(grid.firstAdd(d, getTileOfPlayer(is)));
                 removeTileOfPlayer(is);
                 pass();
                 restart = false;
@@ -83,7 +86,7 @@ public class Game {
         var restart = true;
         while (restart) {
             try {
-                grid.add(row, col, players[currentPlayer].getHand().get(index));
+                players[currentPlayer].addScore(grid.add(row, col, players[currentPlayer].getHand().get(index)));
                 removeTileOfPlayer(index);
                 pass();
                 restart = false;
@@ -105,7 +108,7 @@ public class Game {
         var restart = true;
         while (restart) {
             try {
-                grid.add(row, col, d, getTileOfPlayer(indexes));
+                players[currentPlayer].addScore(grid.add(row, col, d, getTileOfPlayer(indexes)));
                 removeTileOfPlayer(indexes);
                 pass();
                 restart = false;
@@ -130,7 +133,7 @@ public class Game {
         var restart = true;
         while (restart) {
             try {
-                grid.add(getTileAtPosOfPlayer(is));
+                players[currentPlayer].addScore(grid.add(getTileAtPosOfPlayer(is)));
                 removeTileOfPlayer(getTilesIndexes(is));
                 pass();
                 restart = false;
