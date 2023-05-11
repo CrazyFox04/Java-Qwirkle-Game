@@ -1,11 +1,9 @@
 package g60904.qwirkle.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 /**
  * The Grid class represents the game board of Qwirkle. It contains a 2D array of Tiles
@@ -18,12 +16,8 @@ import java.util.stream.Stream;
 public class Grid {
     private final Tile[][] tiles;
     private boolean isEmpty;
-    private int[] actualLimits;
+    private final int[] actualLimits;
     private final int size;
-    private HashSet<TileAtPosition> tilesPointList;
-    private int bonusPoint;
-    private Direction dirToPlaceTile;
-    private int leftToPlace;
 
     /**
      * Constructs a new Grid instance with a 91x91 2D array of Tiles and initializes
@@ -34,8 +28,6 @@ public class Grid {
         tiles = new Tile[size][size];
         isEmpty = true;
         actualLimits = new int[]{46, 44, 44, 46};
-        tilesPointList = new HashSet<>();
-        bonusPoint = 0;
     }
 
     /**
@@ -52,22 +44,18 @@ public class Grid {
         if (!isEmpty) {
             throw new QwirkleException("This method can only be called when the Grid is empty.");
         }
-        tiles[45][45] = line[0];
-        int i = 0;
-        try {
-            for (i = 1; i < line.length; i++) {
-                add(45 + i * d.getDeltaRow(), 45 + i * d.getDeltaCol(), line[i]);
+        if (line.length > 1) {
+            addTiles(45, 45, d, line);
+            if (!moveRespectRules(45, 45)) {
+                removeTiles(45, 45, d, line.length);
+                throw new QwirkleException("Tiles doesn't respect rules, no tile have been placed");
             }
-        } catch (QwirkleException e) {
-            remove(45, 45, d, i);
-            String lineType = (d == Direction.LEFT || d == Direction.RIGHT) ? "row" : "column";
-            throw new QwirkleException("The position (" + (45 + (i) * d.getDeltaRow())
-                    + ", " + (45 + (i) * d.getDeltaCol()) +
-                    ") cannot accept the Tile (" + line[i] + ").\n No tiles have been placed.");
+        } else {
+            addTile(45, 45, line[0]);
         }
         modifyLimits(d, line.length, 45, 45);
         isEmpty = false;
-        return line.length;
+        return calculatePoint(45, 45);
     }
 
     /**
@@ -81,22 +69,19 @@ public class Grid {
      *                          attributes not matching with the given tile.
      */
     public int add(int row, int col, Tile tile) throws QwirkleException {
-        if (!Thread.currentThread().getStackTrace()[2].getMethodName().equals("add")) {
-            resetPreviousPointsCalculation();
-            setPointCalculation(1);
+        if (isEmpty()) {
+            throw new QwirkleException("You need to use first add to do the first move");
         }
         if (tiles[row][col] != null) {
             throw new QwirkleException("This position (" + row + ", " + col + ") already contain a tile");
         }
-        if (checkNearbyLines(tile, row, col)) {
-            tiles[row][col] = tile;
-            modifyLimits(row, col);
-            leftToPlace--;
-        } else {
-            throw new QwirkleException("The position (" + row + ", " + col + ") " +
-                    "cannot accept the Tile (" + tile + ").");
+        addTile(row, col, tile);
+        if (!moveRespectRules(row, col)) {
+            removeTile(row, col);
+            throw new QwirkleException("Tiles doesn't respect rules, no tile have been placed");
         }
-        return pointsCalculator();
+        modifyLimits(row, col);
+        return calculatePoint(row, col);
     }
 
     /**
@@ -110,25 +95,17 @@ public class Grid {
      *                          if a position already contains a tile
      */
     public int add(int row, int col, Direction d, Tile... line) {
-        resetPreviousPointsCalculation();
-        setPointCalculation(line.length, d);
-        var numberOfTilesPlaced = 0;
-        try {
-            for (Tile tile : line) {
-                add(row + numberOfTilesPlaced * d.getDeltaRow(),
-                        col + numberOfTilesPlaced * d.getDeltaCol(), tile);
-                numberOfTilesPlaced++;
-            }
-            modifyLimits(d, line.length, row, col);
-        } catch (QwirkleException e) {
-            remove(row, col, d, numberOfTilesPlaced);
-            throw new QwirkleException("The position (" + (row + (numberOfTilesPlaced) * d.getDeltaRow())
-                    + ", " + (col + (numberOfTilesPlaced) * d.getDeltaCol()) +
-                    ") cannot accept the Tile (" + line[numberOfTilesPlaced] + ").\n No tiles have been placed.");
+        if (isEmpty()) {
+            throw new QwirkleException("You need to use first add to do the first move");
         }
-        return pointsCalculator();
+        addTiles(row, col, d, line);
+        if (!moveRespectRules(row, col, d, line.length)) {
+            removeTiles(row, col, d, line.length);
+            throw new QwirkleException("Tiles doesn't respect rules, no tile have been placed");
+        }
+        modifyLimits(d, line.length, row, col);
+        return calculatedPoint(row, col, d, line.length);
     }
-
 
     /**
      * Adds a line of tiles to the game board, where each tile is specified by a TileAtPosition object.
@@ -139,172 +116,22 @@ public class Grid {
      */
 
     public int add(TileAtPosition... line) {
-        resetPreviousPointsCalculation();
-        setPointCalculation(line.length);
-        int[] copyOfLimits = Arrays.copyOf(actualLimits, actualLimits.length);
-        var row = line[0].row();
-        var col = line[0].col();
-        var numberOfTilesPlaced = 0;
-        try {
-            for (TileAtPosition tile : line) {
-                if (tile.row() == row || tile.col() == col) {
-                    add(tile.row(), tile.col(), tile.tile());
-                    modifyLimits(tile.row(), tile.col());
-                    leftToPlace--;
-                    numberOfTilesPlaced++;
-                } else {
-                    throw new QwirkleException("The tile need to be played on same line or column");
-                }
+        if (isEmpty()) {
+            throw new QwirkleException("You need to use first add to do the first move");
+        }
+        for (TileAtPosition tileAtPosition : line) {
+            addTile(tileAtPosition.row(), tileAtPosition.col(), tileAtPosition.tile());
+        }
+        if (!moveRespectRulesTAP(line)) {
+            for (TileAtPosition tileAtPosition : line) {
+                removeTile(tileAtPosition.row(), tileAtPosition.col());
             }
-        } catch (QwirkleException e) {
-            removeTilesDueToException(line, numberOfTilesPlaced);
-            actualLimits = copyOfLimits;
-            throw new QwirkleException(e.getMessage());
+            throw new QwirkleException("Tiles doesn't respect rules, no tile have been placed");
         }
-        return pointsCalculator();
-    }
-
-    private void removeTilesDueToException(TileAtPosition[] tile, int numberOfTilesPLaced) {
-        for (int i = 0; i < numberOfTilesPLaced; i++) {
-            tiles[tile[i].row()][tile[i].col()] = null;
+        for (TileAtPosition tileAtPosition : line) {
+            modifyLimits(tileAtPosition.row(), tileAtPosition.col());
         }
-    }
-
-    /**
-     * Checks if the neighboring tiles of the specified position match the attributes of the given tile
-     * in all four directions: up, down, left, and right.
-     *
-     * @param tile The tile to be checked for attribute matching.
-     * @param row  The row index of the position whose neighboring tiles are to be checked.
-     * @param col  The column index of the position whose neighboring tiles are to be checked.
-     * @return {@code true} if the neighboring tiles' attributes match with the given tile in all
-     * four directions; {@code false} otherwise.
-     * @throws QwirkleException if the position does not have any neighboring tiles.
-     */
-    private boolean checkNearbyLines(Tile tile, int row, int col) {
-        if (checkSurroundings(row, col) == 0) {
-            throw new QwirkleException("The Tile (" + row + ", " + col + ") cannot be placed " +
-                    "where there is no Tile yet");
-        } else {
-            tilesPointList.add(new TileAtPosition(row, col, tile));
-            return
-                    checkRedundantTiles(
-                            checkLineInDirection(tile, row, col, Direction.UP),
-                            checkLineInDirection(tile, row, col, Direction.DOWN),
-                            tile
-                    ) && checkRedundantTiles(
-                            checkLineInDirection(tile, row, col, Direction.LEFT),
-                            checkLineInDirection(tile, row, col, Direction.RIGHT),
-                            tile
-                    );
-        }
-    }
-
-    /**
-     * Returns a list of objects that are obtained by applying the specified function to the
-     * tiles in a line in a particular direction starting from the specified position on the
-     * game board.
-     *
-     * @param which The function that is applied to each tile in the line to obtain an object.
-     * @param d     The direction in which the line is traversed.
-     * @param row   The row index of the starting position.
-     * @param col   The column index of the starting position.
-     * @return A list of objects that are obtained by applying the specified function to the
-     * tiles in a line in the specified direction starting from the specified position.
-     */
-    private List<Object> getLineInDirection(Function<Tile, Object> which, Direction d, int row, int col) {
-        var nextTile = tiles[row += d.getDeltaRow()][col += d.getDeltaCol()];
-        ArrayList<Object> resultList = new ArrayList<>();
-        while (nextTile != null) {
-            resultList.add(which.apply(nextTile));
-            tilesPointList.add(new TileAtPosition(row, col, nextTile));
-            nextTile = tiles[row += d.getDeltaRow()][col += d.getDeltaCol()];
-        }
-        if (resultList.size() == 5) {
-            bonusPoint += 6;
-        }
-        return resultList;
-    }
-
-    /**
-     * Checks the tiles in a line in the specified direction for a match with the specified tile.
-     * Returns a list of objects, which can either be the shapes or colors of the tiles in the line.
-     *
-     * @param tile the tile to match against
-     * @param row  the row of the tile to match
-     * @param col  the column of the tile to match
-     * @param d    the direction in which to search for a matching tile
-     * @return a list of objects representing either the shapes or colors of the tiles in the line
-     * @throws QwirkleException if there is no matching tile in the line
-     */
-    private List<Object> checkLineInDirection(Tile tile, int row, int col, Direction d) {
-        List<Object> list = new ArrayList<>();
-        var tileInD = tiles[row + d.getDeltaRow()][col + d.getDeltaCol()];
-        if (tileInD != null && tile.color() == tileInD.color()) {
-            list.addAll(getLineInDirection(Tile::shape, d, row, col));
-        } else if (tileInD != null && tile.shape() == tileInD.shape()) {
-            list.addAll(getLineInDirection(Tile::color, d, row, col));
-        } else if (tileInD == null) {
-            return list;
-        } else {
-            throw new QwirkleException("In the direction '" + d + "' the Tile " +
-                    "(" + tile + ") doesn't have a matching color or shape");
-        }
-        return list;
-    }
-
-    /**
-     * Checks if there are any redundant tiles in two lists of tiles obtained by checking the tiles
-     * in two directions for a match with a specified tile.
-     *
-     * @param tilesInDir1 the list of tiles obtained by checking in one direction
-     * @param tilesInDir2 the list of tiles obtained by checking in another direction
-     * @return {@code true} if there are no redundant tiles, {@code false} otherwise
-     */
-    private boolean checkRedundantTiles(List<Object> tilesInDir1, List<Object> tilesInDir2, Tile tile) {
-        if (!tilesInDir1.isEmpty() && tilesInDir1.get(0) instanceof Shape) {
-            tilesInDir1.add(tile.shape());
-        } else if (!tilesInDir2.isEmpty() && tilesInDir2.get(0) instanceof Shape) {
-            tilesInDir2.add(tile.shape());
-        } else if (!tilesInDir1.isEmpty() && tilesInDir1.get(0) instanceof Color) {
-            tilesInDir1.add(tile.color());
-        } else if (!tilesInDir2.isEmpty() && tilesInDir2.get(0) instanceof Color) {
-            tilesInDir2.add(tile.color());
-        }
-        var list = Stream.concat(tilesInDir1.stream(), tilesInDir2.stream()).toList();
-        var distinctSet = new HashSet<>(list);
-        return list.size() == distinctSet.size();
-    }
-
-    /**
-     * Checks if all the surrounding positions of a given position are null.
-     *
-     * @param row the row index of the position to check
-     * @param col the column index of the position to check
-     * @return {@code true} if all surrounding positions are null, {@code false} otherwise
-     */
-    private int checkSurroundings(int row, int col) {
-        var directions = new ArrayList<Direction>();
-        var numberOfTiles = 0;
-        for (Direction d : Direction.values()) {
-            if (get(row + d.getDeltaRow(), col + d.getDeltaCol()) != null) {
-                directions.add(d);
-                numberOfTiles++;
-            } else if (dirToPlaceTile != null && dirToPlaceTile.opposite().equals(d) && leftToPlace > 0) {
-                directions.add(d);
-                numberOfTiles++;
-            }
-        }
-        if (numberOfTiles > 1) {
-            bonusPoint += directions.size() - 1;
-            if (directions.contains(Direction.UP) && directions.contains(Direction.DOWN)) {
-                bonusPoint--;
-            }
-            if (directions.contains(Direction.LEFT) && directions.contains(Direction.DOWN)) {
-                bonusPoint--;
-            }
-        }
-        return directions.size();
+        return calculatedPoint(line);
     }
 
     /**
@@ -320,13 +147,6 @@ public class Grid {
         }
         return tiles[row][col];
     }
-
-    private void remove(int row, int col, Direction d, int numberOfTilesPlaced) {
-        for (int i = numberOfTilesPlaced - 1; i >= 0; i--) {
-            tiles[row + i * d.getDeltaRow()][col + i * d.getDeltaCol()] = null;
-        }
-    }
-
 
     /**
      * Returns a boolean value indicating whether the Grid is empty or not.
@@ -350,6 +170,447 @@ public class Grid {
     }
 
     /**
+     * Adds a tile to the specified position in the game board.
+     *
+     * @param row  The row index of the position.
+     * @param col  The column index of the position.
+     * @param tile The tile to be added.
+     * @throws QwirkleException if the position already contains a tile.
+     */
+    private void addTile(int row, int col, Tile tile) throws QwirkleException {
+        if (tiles[row][col] == null) {
+            tiles[row][col] = tile;
+        } else {
+            throw new QwirkleException("The position (" + row + ", " + col + ") " + "already contain a tile");
+        }
+    }
+
+    /**
+     * Adds multiple tiles in a specified direction starting from the given position.
+     *
+     * @param row   The starting row index of the position.
+     * @param col   The starting column index of the position.
+     * @param d     The direction in which the tiles are added.
+     * @param tiles The tiles to be added.
+     * @throws QwirkleException if the position already contains a tile.
+     */
+    private void addTiles(int row, int col, Direction d, Tile... tiles) throws QwirkleException {
+        var numberOfTilePlaced = 0;
+        try {
+            for (Tile tile : tiles) {
+                addTile(row + numberOfTilePlaced * d.getDeltaRow(), col + numberOfTilePlaced * d.getDeltaCol(), tile);
+                numberOfTilePlaced++;
+            }
+        } catch (QwirkleException e) {
+            removeTiles(row, col, d, numberOfTilePlaced);
+            throw new QwirkleException(e.getMessage());
+        }
+    }
+
+    /**
+     * Removes the tile at the specified position from the game board.
+     *
+     * @param row The row index of the position.
+     * @param col The column index of the position.
+     */
+    private void removeTile(int row, int col) {
+        tiles[row][col] = null;
+    }
+
+    /**
+     * Removes multiple tiles in a specified direction starting from the given position.
+     *
+     * @param row            The starting row index of the position.
+     * @param col            The starting column index of the position.
+     * @param d              The direction in which the tiles are removed.
+     * @param numberToRemove The number of tiles to be removed.
+     */
+    private void removeTiles(int row, int col, Direction d, int numberToRemove) {
+        for (int i = 0; i < numberToRemove; i++) {
+            removeTile(row + i * d.getDeltaRow(), col + i * d.getDeltaCol());
+        }
+    }
+
+    /**
+     * Checks if placing a tile at the specified position respects the game rules.
+     *
+     * @param row The row index of the position.
+     * @param col The column index of the position.
+     * @return {@code true} if the tile placement respects the rules, {@code false} otherwise.
+     */
+    private boolean moveRespectRules(int row, int col) {
+        var rowOfTiles = getRowFromMove(row, col);
+        var colOfTiles = getColFromMove(row, col);
+        if (!notTheSameTile(rowOfTiles) || !notTheSameTile(colOfTiles)) {
+            return false;
+        }
+        if (!shareACaract(rowOfTiles) || !shareACaract(colOfTiles)) {
+            return false;
+        }
+        if (rowOfTiles.size() == 1 && colOfTiles.size() == 1) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Checks if moving a tile to a specific position respects the rules.
+     *
+     * @param row           The row position to move the tile.
+     * @param col           The column position to move the tile.
+     * @param d             The direction in which the tile is being moved.
+     * @param numberOfTiles The number of tiles being moved.
+     * @return {@code true} if moving the tile respects the rules, {@code false} otherwise.
+     */
+    private boolean moveRespectRules(int row, int col, Direction d, int numberOfTiles) {
+        return moveRespectRules(row, col) && isAttachedToExistingTile(row, col, d, numberOfTiles);
+    }
+
+    /**
+     * Checks if a tile is attached to an existing tile in a specific direction.
+     *
+     * @param row           The row position of the tile.
+     * @param col           The column position of the tile.
+     * @param d             The direction in which to check attachment.
+     * @param numberOfTiles The number of tiles to check attachment.
+     * @return {@code true} if the tile is attached to an existing tile, {@code false} otherwise.
+     */
+    private boolean isAttachedToExistingTile(int row, int col, Direction d, int numberOfTiles) {
+        var accoladeTiles = new HashSet<TileAtPosition>();
+        for (int i = 0; i < numberOfTiles; i++) {
+            for (Direction direction : Direction.values()) {
+                accoladeTiles.addAll(getTilesAtPosInDirection(row, col, direction, 0));
+            }
+            row += d.getDeltaRow();
+            col += d.getDeltaCol();
+        }
+        return accoladeTiles.size() != numberOfTiles;
+    }
+
+    /**
+     * Checks if all the tiles in the given positions can be placed respecting the rules.
+     *
+     * @param tilesAtPos TilesAtPosition need to be checked.
+     * @return {@code true} if all tiles can be placed respecting the rules, {@code false} otherwise.
+     */
+    private boolean moveRespectRulesTAP(TileAtPosition... tilesAtPos) {
+        for (TileAtPosition tileAtPos : tilesAtPos) {
+            if (!moveRespectRules(tileAtPos.row(), tileAtPos.col())) {
+                return false;
+            }
+        }
+        if (!isOnSameLine(tilesAtPos)) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Checks if all the tiles are on the same line.
+     *
+     * @param tilesAtPosition TilesAtPosition need to be checked.
+     * @return {@code true} if all tiles are on the same line, {@code false} otherwise.
+     */
+    private boolean isOnSameLine(TileAtPosition... tilesAtPosition) {
+        if (tilesAtPosition.length == 1) {
+            return true;
+        }
+        var d = getDirOfTilesAtPos(tilesAtPosition);
+        if (d == null) {
+            return false;
+        }
+        var tiles = getTilesAtPosInDirection(tilesAtPosition[0].row(), tilesAtPosition[0].col(), d, 0);
+        for (TileAtPosition tileAtPosition : tilesAtPosition) {
+            if (!tiles.contains(tileAtPosition)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Returns the direction of the tiles at the given positions.
+     *
+     * @param tilesAtPosition An array of TileAtPosition objects representing the tiles and their positions.
+     * @return The direction of the tiles, or {@code null} if the tiles are not in a straight line.
+     */
+    private Direction getDirOfTilesAtPos(TileAtPosition... tilesAtPosition) {
+        var rowOfFirst = tilesAtPosition[0].row();
+        var rowOfSecond = tilesAtPosition[1].row();
+        var colOfFirst = tilesAtPosition[0].col();
+        var colOfSecond = tilesAtPosition[1].col();
+        if (rowOfFirst == rowOfSecond) {
+            if (colOfFirst > colOfSecond) {
+                return Direction.LEFT;
+            } else {
+                return Direction.RIGHT;
+            }
+        } else if (colOfFirst == colOfSecond) {
+            if (rowOfFirst > rowOfSecond) {
+                return Direction.UP;
+            } else {
+                return Direction.DOWN;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Retrieves the TileAtPosition object at the specified position.
+     *
+     * @param row The row position of the tile.
+     * @param col The column position of the tile.
+     * @return The TileAtPosition object at the specified position.
+     */
+    private TileAtPosition getTileAtPos(int row, int col) {
+        return new TileAtPosition(row, col, get(row, col));
+    }
+
+    /**
+     * Checks if the given list of tiles share a common shape or color.
+     *
+     * @param tiles The list of tiles to check.
+     * @return {@code true} if the tiles share a common shape or color, {@code false} otherwise.
+     */
+    private boolean shareACaract(ArrayList<Tile> tiles) {
+        if (tiles.size() == 1) {
+            return true;
+        }
+        HashSet<Shape> shapes = (HashSet<Shape>) tiles.stream().map(Tile::shape).collect(Collectors.toSet());
+        HashSet<Color> colors = (HashSet<Color>) tiles.stream().map(Tile::color).collect(Collectors.toSet());
+        return shapes.size() == 1 ^ colors.size() == 1;
+    }
+
+    /**
+     * Checks if the given list of tiles contains duplicates.
+     *
+     * @param tiles The list of tiles to check.
+     * @return {@code true} if the list contains duplicates, {@code false} otherwise.
+     */
+    private boolean notTheSameTile(ArrayList<Tile> tiles) {
+        var tilesHashSet = new HashSet<Tile>(tiles);
+        return tilesHashSet.size() == tiles.size();
+    }
+
+    /**
+     * Retrieves the column of tiles from the specified position.
+     *
+     * @param row The row position of the tile.
+     * @param col The column position of the tile.
+     * @return The list of tiles in the column.
+     */
+    private ArrayList<Tile> getColFromMove(int row, int col) {
+        var listOfTiles = getTilesInDirection(row, col, Direction.UP, 1);
+        listOfTiles.addAll(getTilesInDirection(row, col, Direction.DOWN, 1));
+        listOfTiles.add(get(row, col));
+        return listOfTiles;
+    }
+
+    /**
+     * Retrieves the row of tiles from the specified position.
+     *
+     * @param row The row position of the tile.
+     * @param col The column position of the tile.
+     * @return The list of tiles in the row.
+     */
+    private ArrayList<Tile> getRowFromMove(int row, int col) {
+        var listOfTiles = getTilesInDirection(row, col, Direction.LEFT, 1);
+        listOfTiles.addAll(getTilesInDirection(row, col, Direction.RIGHT, 1));
+        listOfTiles.add(get(row, col));
+        return listOfTiles;
+    }
+
+    /**
+     * Retrieves the tiles in the specified direction from the given position.
+     *
+     * @param row    The row position of the tile.
+     * @param col    The column position of the tile.
+     * @param d      The direction to retrieve the tiles.
+     * @param offSet The offset from the initial position.
+     * @return The list of tiles in the specified direction.
+     */
+    private ArrayList<Tile> getTilesInDirection(int row, int col, Direction d, int offSet) {
+        var listOfTiles = new ArrayList<Tile>();
+        Tile nextTile;
+        var numberOfTileFound = offSet;
+        do {
+            nextTile = get(row + numberOfTileFound * d.getDeltaRow(), col + numberOfTileFound * d.getDeltaCol());
+            if (nextTile != null) {
+                listOfTiles.add(nextTile);
+            }
+            numberOfTileFound++;
+        } while (nextTile != null);
+        return listOfTiles;
+    }
+
+    /**
+     * Retrieves the tiles at the specified position in the given direction.
+     *
+     * @param row    The row position of the tile.
+     * @param col    The column position of the tile.
+     * @param d      The direction to retrieve the tiles.
+     * @param offSet The offset from the initial position.
+     * @return The list of tiles at the specified position in the specified direction.
+     */
+    private ArrayList<TileAtPosition> getTilesAtPosInDirection(int row, int col, Direction d, int offSet) {
+        var listOfTiles = new ArrayList<TileAtPosition>();
+        TileAtPosition nextTile;
+        var numberOfTileFound = offSet;
+        do {
+            nextTile = getTileAtPos(row + numberOfTileFound * d.getDeltaRow(),
+                    col + numberOfTileFound * d.getDeltaCol());
+            if (nextTile.tile() != null) {
+                listOfTiles.add(nextTile);
+            }
+            numberOfTileFound++;
+        } while (nextTile.tile() != null);
+        return listOfTiles;
+    }
+
+    /**
+     * Calculates the total points earned at the specified position.
+     *
+     * @param row The row position of the tile.
+     * @param col The column position of the tile.
+     * @return The total points earned at the specified position.
+     */
+    private int calculatePoint(int row, int col) {
+        var accoladeTiles = new HashSet<TileAtPosition>();
+        var QwirklePoints = 0;
+        for (Direction direction : Direction.values()) {
+            accoladeTiles.addAll(getTilesAtPosInDirection(row, col, direction, 0));
+            if (getTilesInDirection(row, col, direction, 0).size() == 6) {
+                QwirklePoints += 6;
+            }
+        }
+        return accoladeTiles.size() + QwirklePoints + additionalPointsCausedByTile(row, col);
+    }
+
+    /**
+     * Calculates the total points earned when placing tiles in a specific direction.
+     *
+     * @param row                 The row position of the first tile.
+     * @param col                 The column position of the first tile.
+     * @param d                   The direction in which the tiles are placed.
+     * @param numberOfTilesPlaced The number of tiles placed.
+     * @return The total points earned for the placement.
+     */
+    private int calculatedPoint(int row, int col, Direction d, int numberOfTilesPlaced) {
+        var accoladeTiles = new HashSet<TileAtPosition>();
+        var actualRow = row;
+        var actualCol = col;
+        var QwirklePoints = 0;
+        for (int i = 0; i < numberOfTilesPlaced; i++) {
+            for (Direction direction : Direction.values()) {
+                accoladeTiles.addAll(getTilesAtPosInDirection(actualRow, actualCol, direction, 0));
+            }
+            actualRow += d.getDeltaRow();
+            actualCol += d.getDeltaCol();
+        }
+        for (Direction direction : Direction.values()) {
+            if (getTilesInDirection(row, col, direction, 0).size() == 6) {
+                QwirklePoints += 6;
+            }
+        }
+        return accoladeTiles.size() + QwirklePoints + additionalPointsCausedByTiles(row, col, d, numberOfTilesPlaced);
+    }
+
+    /**
+     * Calculates the total points earned for a given set of tiles.
+     *
+     * @param tiles The tiles for which to calculate the points.
+     * @return The total points earned for the tiles.
+     */
+    private int calculatedPoint(TileAtPosition... tiles) {
+        var accoladeTiles = new HashSet<TileAtPosition>();
+        var additionalPoints = 0;
+        var QwirklePoints = 0;
+        for (TileAtPosition tile : tiles) {
+            for (Direction direction : Direction.values()) {
+                accoladeTiles.addAll(getTilesAtPosInDirection(tile.row(), tile.col(), direction, 0));
+            }
+            additionalPoints += additionalPointsCausedByTile(tile.row(), tile.col());
+            for (Direction direction : Direction.values()) {
+                if (getTilesInDirection(tile.row(), tile.col(), direction, 0).size() == 6) {
+                    QwirklePoints += 6;
+                }
+            }
+        }
+        return accoladeTiles.size() + QwirklePoints + additionalPoints;
+    }
+
+    /**
+     * Calculates additional points caused by placing a tile at the specified position.
+     *
+     * @param row The row position of the tile.
+     * @param col The column position of the tile.
+     * @return The additional points caused by the tile placement.
+     */
+    private int additionalPointsCausedByTile(int row, int col) {
+        var listOfDirectionsNearbyTile = getDirectionsNearbyATile(row, col);
+        if ((listOfDirectionsNearbyTile.contains(Direction.UP) ||
+                listOfDirectionsNearbyTile.contains(Direction.DOWN)) &&
+                (listOfDirectionsNearbyTile.contains(Direction.LEFT) ||
+                        listOfDirectionsNearbyTile.contains(Direction.RIGHT))) {
+            return 1;
+        }
+        return 0;
+    }
+
+    /**
+     * Calculates additional points caused by placing multiple tiles in a specific direction.
+     *
+     * @param row           The row position of the first tile.
+     * @param col           The column position of the first tile.
+     * @param d             The direction in which the tiles are placed.
+     * @param numberOfTiles The number of tiles placed.
+     * @return The additional points caused by the tile placements.
+     */
+    private int additionalPointsCausedByTiles(int row, int col, Direction d, int numberOfTiles) {
+        var additionalPoints = 0;
+        for (int i = 0; i < numberOfTiles; i++) {
+            additionalPoints += numberOfNonOppositeDirectionsNearbyATile(row + i * d.getDeltaRow(), col + i * d.getDeltaCol());
+        }
+        return additionalPoints;
+    }
+
+    /**
+     * Calculates the number of non-opposite directions nearby a tile at the specified position.
+     *
+     * @param row The row position of the tile.
+     * @param col The column position of the tile.
+     * @return The number of non-opposite directions nearby the tile.
+     */
+    private int numberOfNonOppositeDirectionsNearbyATile(int row, int col) {
+        var listOfDirectionsNearbyTile = getDirectionsNearbyATile(row, col);
+        if ((listOfDirectionsNearbyTile.contains(Direction.UP) ||
+                listOfDirectionsNearbyTile.contains(Direction.DOWN)) &&
+                (listOfDirectionsNearbyTile.contains(Direction.LEFT) ||
+                        listOfDirectionsNearbyTile.contains(Direction.RIGHT))) {
+            return 1;
+        }
+        return 0;
+    }
+
+    /**
+     * Retrieves the list of directions of neighboring tiles near a specified position.
+     *
+     * @param row The row position of the tile.
+     * @param col The column position of the tile.
+     * @return The list of directions of neighboring tiles.
+     */
+    private List<Direction> getDirectionsNearbyATile(int row, int col) {
+        var listOfDirections = new ArrayList<Direction>();
+        for (Direction direction : Direction.values()) {
+            if (get(row + direction.getDeltaRow(), col + direction.getDeltaCol()) != null) {
+                listOfDirections.add(direction);
+            }
+        }
+        return listOfDirections;
+    }
+
+
+    /**
      * Updates the actualLimits attribute based on the placement of a Tile in a certain direction.
      * The direction can be UP, DOWN, LEFT, or RIGHT, and the numberPlaced parameter indicates
      * the number of Tiles placed in that direction. The row and col parameters indicate the
@@ -361,6 +622,7 @@ public class Grid {
      * @param col          the column of the first Tile placed in the specified direction.
      */
     private void modifyLimits(Direction d, int numberPlaced, int row, int col) {
+        modifyLimits(row, col);
         switch (d) {
             case UP -> actualLimits[2] = Math.min(actualLimits[2], row - numberPlaced);
             case DOWN -> actualLimits[0] = Math.max(actualLimits[0], row + numberPlaced);
@@ -387,25 +649,5 @@ public class Grid {
         } else if (col >= actualLimits[3]) {
             actualLimits[3]++;
         }
-    }
-
-    private int pointsCalculator() {
-        return tilesPointList.size() + bonusPoint;
-    }
-
-    private void setPointCalculation(int leftToPlace) {
-        this.leftToPlace = leftToPlace;
-        this.dirToPlaceTile = null;
-    }
-
-    private void setPointCalculation(int leftToPlace, Direction dirToPlace) {
-        this.leftToPlace = leftToPlace;
-        this.dirToPlaceTile = dirToPlace;
-    }
-    private void resetPreviousPointsCalculation() {
-        bonusPoint = 0;
-        tilesPointList = new HashSet<>();
-        dirToPlaceTile = null;
-        leftToPlace = 0;
     }
 }
