@@ -903,7 +903,7 @@ class GridTest {
 
     @Test
     @Tag("points")
-    @DisplayName("firstAdd - Add tile")
+    @DisplayName("Points - firstAdd - Add tile")
     void points_firstAdd_addTile() {
         assertEquals(1, myGrid.firstAdd(
                 Direction.DOWN, new Tile(Color.BLUE, Shape.ROUND)
@@ -912,7 +912,7 @@ class GridTest {
 
     @Test
     @Tag("points")
-    @DisplayName("firstAdd - Add tiles")
+    @DisplayName("Points - firstAdd - Add tiles")
     void points_firstAdd_addTiles() {
         assertEquals(2, myGrid.firstAdd(
                 Direction.UP,
@@ -922,7 +922,7 @@ class GridTest {
 
     @Test
     @Tag("points")
-    @DisplayName("firstAdd - Add tiles - Remove, no points")
+    @DisplayName("Points - firstAdd - Add tiles - Remove, no points")
     void points_firstAdd_addTiles_remove_noPoints() {
         assertThrows(QwirkleException.class, () -> myGrid.firstAdd(
                 Direction.UP,
@@ -932,7 +932,7 @@ class GridTest {
 
     @Test
     @Tag("points")
-    @DisplayName("add - Add tile - Adjacent Two lines")
+    @DisplayName("Points - add - Add tile - Adjacent Two lines")
     void points_add_addTile_adjacentTwoLines() {
         addSomeTiles_FirstAdd_SameColor();
         myGrid.add(44, 45, new Tile(Color.GREEN, Shape.PLUS));
@@ -941,7 +941,7 @@ class GridTest {
 
     @Test
     @Tag("points")
-    @DisplayName("add - Add tile - Complete a line")
+    @DisplayName("Points - add - Add tile - Complete a line")
     void points_add_addTile_completeALine() {
         addSomeTiles_FirstAdd_SameColor();
         assertEquals(4, myGrid.add(45, 42, new Tile(Color.BLUE, Shape.STAR)));
@@ -949,7 +949,7 @@ class GridTest {
 
     @Test
     @Tag("points")
-    @DisplayName("add - Add tile - Complete a line - QWIRKLE")
+    @DisplayName("Points - add - Add tile - Complete a line - QWIRKLE")
     void points_add_addTile_completeALine_qwirkle() {
         addSomeTiles_FirstAdd_SameColor();
         myGrid.add(45, 42, new Tile(Color.BLUE, Shape.STAR));
@@ -959,7 +959,7 @@ class GridTest {
 
     @Test
     @Tag("points")
-    @DisplayName("add - Add tile - Between two lines")
+    @DisplayName("Points - add - Add tile - Between two lines")
     void points_add_addTile_betweenTwoLines() {
         addSomeTiles_FirstAdd_SameColor();
         myGrid.add(46, 45, new Tile(Color.RED, Shape.PLUS));
@@ -973,7 +973,7 @@ class GridTest {
 
     @Test
     @Tag("points")
-    @DisplayName("add - Add tile - Between three lines")
+    @DisplayName("Points - add - Add tile - Between three lines")
     void points_add_addTile_betweenThreeLines() {
         myGrid.firstAdd(Direction.DOWN, new Tile(Color.BLUE, Shape.STAR),
                 new Tile(Color.BLUE, Shape.CROSS),
@@ -988,7 +988,7 @@ class GridTest {
 
     @Test
     @Tag("points")
-    @DisplayName("add - Add tile - Between four lines")
+    @DisplayName("Points - add - Add tile - Between four lines")
     void points_add_addTile_betweenFourLines() {
         myGrid.firstAdd(Direction.DOWN, new Tile(Color.BLUE, Shape.STAR),
                 new Tile(Color.BLUE, Shape.CROSS),
@@ -1005,7 +1005,7 @@ class GridTest {
 
     @Test
     @Tag("points")
-    @DisplayName("add - Add tiles - Complete a line")
+    @DisplayName("Points - add - Add tiles - Complete a line")
     void points_add_addTiles_completeALine() {
         addSomeTiles_FirstAdd_SameColor();
         assertEquals(5,
@@ -1015,7 +1015,7 @@ class GridTest {
 
     @Test
     @Tag("points")
-    @DisplayName("add - Add tiles - Line Collate to another")
+    @DisplayName("Points - add - Add tiles - Line Collate to another")
     void points_add_addTiles_addALine_collateToAnother() {
         addSomeTiles_FirstAdd_SameShape();
         myGrid.add(45, 42, new Tile(Color.PURPLE, Shape.PLUS));
@@ -1027,7 +1027,7 @@ class GridTest {
 
     @Test
     @Tag("points")
-    @DisplayName("addTileAtPosition - Add tiles - Before and after line")
+    @DisplayName("Points - addTileAtPosition - Add tiles - Before and after line")
     void points_addTileAtPos_addTwoTiles_beforeAndAfterLine() {
         addSomeTiles_FirstAdd_SameColor();
         assertEquals(5, myGrid.add(
@@ -1039,7 +1039,7 @@ class GridTest {
 
     @Test
     @Tag("points")
-    @DisplayName("addTileAtPosition - Add tiles - Next a line ")
+    @DisplayName("Points - addTileAtPosition - Add tiles - Next a line ")
     void points_addTileAtPos_addTwoTiles_nextALine() {
         addSomeTiles_FirstAdd_SameColor();
         assertEquals(5, myGrid.add(
@@ -1051,7 +1051,7 @@ class GridTest {
 
     @Test
     @Tag("points")
-    @DisplayName("addTileAtPosition - Add tile - Between two lines")
+    @DisplayName("Points - addTileAtPosition - Add tile - Between two lines")
     void points_addTileAtPos_AddATile_betweenTwoLines(){
         addSomeTiles_FirstAdd_SameColor();
         myGrid.add(46, 45, new Tile(Color.RED, Shape.PLUS));
