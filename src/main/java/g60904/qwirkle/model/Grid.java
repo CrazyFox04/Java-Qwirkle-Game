@@ -167,6 +167,9 @@ public class Grid {
     public int[] getActualLimits() {
         return actualLimits;
     }
+    public int getGRID_SIZE(){
+        return GRID_SIZE;
+    }
 
     /**
      * Adds a tile to the specified position in the game board.

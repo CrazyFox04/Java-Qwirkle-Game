@@ -55,7 +55,12 @@ public class Player {
      * Refills the player's hand by adding new random tiles from the bag.
      */
     public void refill() {
-        tiles.addAll(List.of(Bag.getInstance().getRandomTiles(-(tiles.size() - 6))));
+        var array = Bag.getInstance().getRandomTiles(-(tiles.size() - 6));
+        for (Tile tile : array) {
+            if (tile != null) {
+                tiles.add(tile);
+            }
+        }
     }
 
     /**
@@ -68,6 +73,7 @@ public class Player {
             tiles.remove(t);
         }
     }
+
     public void addScore(int value) {
         this.score += value;
     }

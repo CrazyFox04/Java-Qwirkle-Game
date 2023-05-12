@@ -2,6 +2,7 @@ package g60904.qwirkle.view;
 
 import g60904.qwirkle.model.GridView;
 import g60904.qwirkle.model.Player;
+import g60904.qwirkle.model.Tile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,9 +58,9 @@ public class View {
      *
      * @param player the Player object whose hand is to be displayed
      */
-    public static void display(Player player) {
-        System.out.println(player.getName() + " it's your turn, " + "you have in your hand (0 - 5) : " + player.getHand());
-        System.out.println("You have " + player.getScore() + " points.");
+    public static void display(String playerName, List<Tile> playerHand, int playerScore) {
+        System.out.println(playerName + " it's your turn, " + "you have in your hand (0 - " + (playerHand.size() - 1) + ") : " + playerHand);
+        System.out.println("You have " + playerScore + " points.");
     }
 
     /**
@@ -131,5 +132,12 @@ public class View {
                         ==================================================================================
                         """
         );
+    }
+    public static void displayEnd(List<Player> players) {
+        System.out.println("The game is finished !");
+        for (Player player : players) {
+            System.out.println(player.getName() + ", you finished the game with " + player.getScore() + " points.");
+        }
+        System.out.println("==================================================================================");
     }
 }

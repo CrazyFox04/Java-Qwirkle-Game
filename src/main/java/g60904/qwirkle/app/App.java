@@ -9,136 +9,194 @@ import java.util.Scanner;
 public class App {
     private static final Scanner clavier = new Scanner(System.in);
     private static Game game;
+    private static final String[] DIRECTIONS = new String[]{"u", "d", "l", "r"};
 
     public static void main(String[] args) {
         View.displayWelcome();
         List<Player> playersList = View.askPlayerName();
         game = new Game(playersList);
-        while (true) {
-            for (Player player : playersList) {
-                View.display(new GridView(game.getGrid()));
-                player.refill();
-                View.display(player);
-                command(player);
-            }
+        while (!game.isOver()) {
+            View.display(new GridView(game.getGrid()));
+            View.display(game.getCurrentPlayerName(), game.getCurrentPlayerHand(), game.getCurrentPlayerScore());
+            askCommandFromCurrentPlayer();
+        }
+        View.displayEnd(playersList);
+    }
+
+    private static void askCommandFromCurrentPlayer() {
+        String command = clavier.nextLine();
+        command = command.toLowerCase();
+        String[] parts = command.split(" ");
+        switch (parts[0]) {
+            case "h" -> displayHelp();
+            case "o" -> placeOneTile(command);
+            case "l" -> placeLineOfTiles(command);
+            case "m" -> placeTilesAtPos(command);
+            case "f" -> placeFirstTiles(command);
+            case "p" -> pass();
+            default -> View.displayError("This command, doesn't exist. Please try again.");
         }
     }
 
-    private static void command(Player player) {
-        boolean restart = true;
-        while (restart) {
-            String command = clavier.nextLine();
-            command = command.toLowerCase();
-            String[] parts = command.split(" ");
-            switch (parts[0]) {
-                case "h" -> {
-                    displayHelp(player);
-                }
-                case "o" -> restart = placeOneTile(restart, command);
-                case "l" -> restart = placeLineOfTiles(restart, command);
-                case "m" -> restart = placeTiles(restart, command);
-                case "f" -> restart = placeFirstTiles(restart, command);
-                case "p" -> restart = pass();
-                default -> View.displayError("This command, doesn't exist. Please try again.");
-            }
-        }
-    }
-
-    private static boolean pass() {
+    private static void pass() {
         game.pass();
-        return false;
+        game.incNumberOfPassInARow();
     }
 
-    private static boolean placeFirstTiles(boolean restart, String command) {
-        try {
-            String[] parts = command.split(" ");
-            var d = getDirection(parts[1]);
-            var args = new int[parts.length - 2];
-            for (int i = 2; i < parts.length; i++) {
-                args[i - 2] = Integer.parseInt(parts[i]);
+    private static void placeFirstTiles(String command) {
+        String[] parts = command.split(" ");
+        if (parts.length < 3) {
+            View.displayError("The number of parameters entered is incorrect. Please try again.");
+        } else if (!isOneOfTheDirection(parts[1])) {
+            View.displayError("The direction your entered is not recognised");
+        } else if (!handPositionAreInHand(parts, 3)) {
+            View.displayError("The position of the tile in the user's hand does not correspond to any known.");
+        } else {
+            try {
+                var d = getDirection(parts[1]);
+                var args = new int[parts.length - 2];
+                for (int i = 2; i < parts.length; i++) {
+                    args[i - 2] = Integer.parseInt(parts[i]);
+                }
+                game.first(d, args);
+            } catch (QwirkleException e) {
+                View.displayError(e.getMessage());
             }
-            game.first(d, args);
-            restart = false;
-        } catch (QwirkleException e) {
-            View.displayError(e.getMessage());
-        } catch (ArrayIndexOutOfBoundsException e) {
-            View.displayError("The number of parameters entered is incorrect. Please try again.");
-        } catch (NumberFormatException e) {
-            View.displayError("The parameters entered must be consistent integers. Please try again.");
-        } catch (IndexOutOfBoundsException e) {
-            View.displayError("The position of the tile in the user's hand does not correspond to any known.");
         }
-        return restart;
     }
 
-    private static boolean placeTiles(boolean restart, String command) {
+    private static boolean handPositionAreInHandTAP(String[] command) {
         try {
-            String[] parts = command.split(" ");
-            var args = new int[parts.length - 1];
-            for (int i = 1; i < parts.length; i++) {
-                args[i - 1] = Integer.parseInt(parts[i]);
+            int sizeOfHand = game.getCurrentPlayerHand().size();
+            for (int i = 3; i < command.length; i += 3) {
+                var pos = Integer.parseInt(command[i]);
+                if (pos > sizeOfHand || pos < 0) {
+                    return false;
+                }
             }
-            game.play(args);
-            restart = false;
-        } catch (QwirkleException e) {
-            View.displayError(e.getMessage());
-        } catch (ArrayIndexOutOfBoundsException e) {
-            View.displayError("The number of parameters entered is incorrect. Please try again.");
+            return true;
         } catch (NumberFormatException e) {
             View.displayError("The parameters entered must be consistent integers. Please try again.");
-        } catch (IndexOutOfBoundsException e) {
-            View.displayError("The position of the tile in the user's hand does not correspond to any known.");
+            return false;
         }
-        return restart;
     }
 
-    private static boolean placeLineOfTiles(boolean restart, String command) {
+    private static boolean positionIsInGridTAP(String[] command) {
         try {
-            String[] parts = command.split(" ");
-            var row = Integer.parseInt(parts[1]);
-            var col = Integer.parseInt(parts[2]);
-            var d = getDirection(parts[3]);
-            var args = new int[parts.length - 4];
-            for (int i = 4; i < parts.length; i++) {
-                args[i - 4] = Integer.parseInt(parts[i]);
+            for (int i = 1; i < command.length; i += 3) {
+                if (!positionIsInGrid(Integer.parseInt(command[i]), Integer.parseInt(command[i + 1]))) {
+                    return false;
+                }
             }
-            game.play(row, col, d, args);
-            restart = false;
-        } catch (QwirkleException e) {
-            View.displayError(e.getMessage());
-        } catch (ArrayIndexOutOfBoundsException e) {
-            View.displayError("The number of parameters entered is incorrect. Please try again.");
+            return true;
         } catch (NumberFormatException e) {
             View.displayError("The parameters entered must be consistent integers. Please try again.");
-        }  catch (IndexOutOfBoundsException e) {
-            View.displayError("The position of the tile in the user's hand does not correspond to any known.");
+            return false;
         }
-        return restart;
     }
 
-    private static boolean placeOneTile(boolean restart, String command) {
+    private static boolean handPositionAreInHand(String[] command, int firstPos) {
         try {
-            String[] parts = command.split(" ");
-            int row = Integer.parseInt(parts[1]);
-            int col = Integer.parseInt(parts[2]);
-            int tileIndex = Integer.parseInt(parts[3]);
-            game.play(row, col, tileIndex);
-            restart = false;
-        } catch (QwirkleException e) {
-            View.displayError(e.getMessage());
-        } catch (ArrayIndexOutOfBoundsException e) {
-            View.displayError("The number of parameters entered is incorrect. Please try again.");
+            int sizeOfHand = game.getCurrentPlayerHand().size();
+            for (int i = firstPos; i < command.length; i++) {
+                var pos = Integer.parseInt(command[i]);
+                if (pos > sizeOfHand || pos < 0) {
+                    return false;
+                }
+            }
+            return true;
         } catch (NumberFormatException e) {
             View.displayError("The parameters entered must be consistent integers. Please try again.");
-        }  catch (IndexOutOfBoundsException e) {
-            View.displayError("The position of the tile in the user's hand does not correspond to any known.");
+            return false;
         }
-        return restart;
     }
 
-    private static void displayHelp(Player player) {
+    private static boolean positionIsInGrid(int row, int col) {
+        var gridSize = game.getGrid().getGRID_SIZE();
+        return row > 0 || row < gridSize && col > 0 || col < gridSize;
+    }
+
+    private static boolean positionIsCorrect(String[] command, int startPos) {
+        var row = command[startPos];
+        var col = command[startPos + 1];
+        try {
+            return positionIsInGrid(Integer.parseInt(row), Integer.parseInt(col));
+        } catch (NumberFormatException e) {
+            View.displayError("The parameters entered must be consistent integers. Please try again.");
+            return false;
+        }
+    }
+
+    private static void placeTilesAtPos(String command) {
+        String[] parts = command.split(" ");
+        if (parts.length < 4) {
+            View.displayError("The number of parameters entered is incorrect. Please try again.");
+        } else if (!positionIsInGridTAP(parts)) {
+            View.displayError("At least one of the position you entered doesn't correspond to correct position on the grid");
+        } else if (!handPositionAreInHandTAP(parts)) {
+            View.displayError("The position of the tile in the user's hand does not correspond to any known.");
+        } else {
+            try {
+                var args = new int[parts.length - 1];
+                for (int i = 1; i < parts.length; i++) {
+                    args[i - 1] = Integer.parseInt(parts[i]);
+                }
+                game.play(args);
+            } catch (QwirkleException e) {
+                View.displayError(e.getMessage());
+            }
+        }
+    }
+
+    private static void placeLineOfTiles(String command) {
+        String[] parts = command.split(" ");
+        if (parts.length < 5) {
+            View.displayError("The number of parameters entered is incorrect. Please try again.");
+        } else if (!positionIsCorrect(parts, 1)) {
+            View.displayError("The position you entered doesn't correspond to a correct position on the grid");
+        } else if (!isOneOfTheDirection(parts[3])) {
+            View.displayError("The direction your entered is not recognised");
+        } else if (!handPositionAreInHand(parts, 4)) {
+            View.displayError("The position of the tile in the user's hand does not correspond to any known.");
+        } else {
+            try {
+                var row = Integer.parseInt(parts[1]);
+                var col = Integer.parseInt(parts[2]);
+                var d = getDirection(parts[3]);
+                var args = new int[parts.length - 4];
+                for (int i = 4; i < parts.length; i++) {
+                    args[i - 4] = Integer.parseInt(parts[i]);
+                }
+                game.play(row, col, d, args);
+            } catch (QwirkleException e) {
+                View.displayError(e.getMessage());
+            }
+        }
+    }
+
+    private static void placeOneTile(String command) {
+        String[] parts = command.split(" ");
+        if (parts.length != 4) {
+            View.displayError("The number of parameters entered is incorrect. Please try again.");
+        } else if (positionIsCorrect(parts, 1)) {
+            View.displayError("The position you entered doesn't correspond to a correct position on the grid");
+        } else if (!handPositionAreInHand(parts, 3)) {
+            View.displayError("The position of the tile in the user's hand does not correspond to any known.");
+        } else {
+            try {
+                var row = Integer.parseInt(parts[1]);
+                var col = Integer.parseInt(parts[2]);
+                var tileIndex = Integer.parseInt(parts[3]);
+                game.play(row, col, tileIndex);
+            } catch (QwirkleException e) {
+                View.displayError(e.getMessage());
+            }
+        }
+    }
+
+    private static void displayHelp() {
         View.displayHelp();
-        View.display(player);
+        View.display(game.getCurrentPlayerName(), game.getCurrentPlayerHand(), game.getCurrentPlayerScore());
     }
 
     private static Direction getDirection(String d) {
@@ -150,5 +208,14 @@ public class App {
             default -> throw new QwirkleException("The direction you entered does not match with any known direction. "
                     + "Please try again.");
         };
+    }
+
+    private static boolean isOneOfTheDirection(String direction) {
+        for (String s : DIRECTIONS) {
+            if (s.equals(direction.toLowerCase())) {
+                return true;
+            }
+        }
+        return false;
     }
 }

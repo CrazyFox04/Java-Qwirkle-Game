@@ -19,6 +19,7 @@ public class Game {
      * The index of the current player.
      */
     private int currentPlayer;
+    private int numberOfPassInARow;
 
     /**
      * Constructs a new Qwirkle game with the specified list of players.
@@ -32,6 +33,7 @@ public class Game {
             players[i] = listOfPlayers.get(i);
         }
         currentPlayer = 0;
+        players[currentPlayer].refill();
     }
 
     /**
@@ -51,7 +53,8 @@ public class Game {
     public List<Tile> getCurrentPlayerHand() {
         return players[currentPlayer].getHand();
     }
-    public int getCurrentPlayerScore () {
+
+    public int getCurrentPlayerScore() {
         return players[currentPlayer].getScore();
     }
 
@@ -62,16 +65,13 @@ public class Game {
      * @param is the indices of the tiles to play from the current player's hand
      */
     public void first(Direction d, int... is) {
-        var restart = true;
-        while (restart) {
-            try {
-                players[currentPlayer].addScore(grid.firstAdd(d, getTileOfPlayer(is)));
-                removeTileOfPlayer(is);
-                pass();
-                restart = false;
-            } catch (QwirkleException e) {
-                throw new QwirkleException(e.getMessage());
-            }
+        try {
+            players[currentPlayer].addScore(grid.firstAdd(d, getTileOfPlayer(is)));
+            removeTileOfPlayer(is);
+            pass();
+            numberOfPassInARow = 0;
+        } catch (QwirkleException e) {
+            throw new QwirkleException(e.getMessage());
         }
     }
 
@@ -83,16 +83,13 @@ public class Game {
      * @param index the index of the tile to play from the current player's hand
      */
     public void play(int row, int col, int index) {
-        var restart = true;
-        while (restart) {
-            try {
-                players[currentPlayer].addScore(grid.add(row, col, players[currentPlayer].getHand().get(index)));
-                removeTileOfPlayer(index);
-                pass();
-                restart = false;
-            } catch (QwirkleException e) {
-                throw new QwirkleException(e.getMessage());
-            }
+        try {
+            players[currentPlayer].addScore(grid.add(row, col, players[currentPlayer].getHand().get(index)));
+            removeTileOfPlayer(index);
+            pass();
+            numberOfPassInARow = 0;
+        } catch (QwirkleException e) {
+            throw new QwirkleException(e.getMessage());
         }
     }
 
@@ -105,16 +102,13 @@ public class Game {
      * @param indexes the indices of the tiles to play from the current player's hand
      */
     public void play(int row, int col, Direction d, int... indexes) {
-        var restart = true;
-        while (restart) {
-            try {
-                players[currentPlayer].addScore(grid.add(row, col, d, getTileOfPlayer(indexes)));
-                removeTileOfPlayer(indexes);
-                pass();
-                restart = false;
-            } catch (QwirkleException e) {
-                throw new QwirkleException(e.getMessage());
-            }
+        try {
+            players[currentPlayer].addScore(grid.add(row, col, d, getTileOfPlayer(indexes)));
+            removeTileOfPlayer(indexes);
+            pass();
+            numberOfPassInARow = 0;
+        } catch (QwirkleException e) {
+            throw new QwirkleException(e.getMessage());
         }
     }
 
@@ -130,16 +124,13 @@ public class Game {
      *                          or do not match the tiles already on the grid.
      */
     public void play(int... is) {
-        var restart = true;
-        while (restart) {
-            try {
-                players[currentPlayer].addScore(grid.add(getTileAtPosOfPlayer(is)));
-                removeTileOfPlayer(getTilesIndexes(is));
-                pass();
-                restart = false;
-            } catch (QwirkleException e) {
-                throw new QwirkleException(e.getMessage());
-            }
+        try {
+            players[currentPlayer].addScore(grid.add(getTileAtPosOfPlayer(is)));
+            removeTileOfPlayer(getTilesIndexes(is));
+            pass();
+            numberOfPassInARow = 0;
+        } catch (QwirkleException e) {
+            throw new QwirkleException(e.getMessage());
         }
     }
 
@@ -149,6 +140,34 @@ public class Game {
      */
     public void pass() {
         currentPlayer = ++currentPlayer % players.length;
+        players[currentPlayer].refill();
+    }
+
+    public void incNumberOfPassInARow() {
+        numberOfPassInARow++;
+    }
+
+    public boolean isOver() {
+        if (numberOfPassInARow >= players.length && isBagEmpty()) {
+            return true;
+        } else if (players[getPreviousPlayer()].getHand().isEmpty() && isBagEmpty()) {
+            players[getPreviousPlayer()].addScore(6);
+            return true;
+        }
+        return false;
+    }
+
+    private int getPreviousPlayer() {
+        return currentPlayer - 1 > 0 ? currentPlayer - 1 : players.length - 1;
+    }
+
+    private boolean isBagEmpty() {
+        for (Player player : players) {
+            if (player.getHand().size() < 6) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
