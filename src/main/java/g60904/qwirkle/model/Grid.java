@@ -17,15 +17,14 @@ public class Grid {
     private final Tile[][] tiles;
     private boolean isEmpty;
     private final int[] actualLimits;
-    private final int size;
+    private final int GRID_SIZE = 91;
 
     /**
      * Constructs a new Grid instance with a 91x91 2D array of Tiles and initializes
      * the isEmpty flag to true.
      */
     public Grid() {
-        size = 91;
-        tiles = new Tile[size][size];
+        tiles = new Tile[GRID_SIZE][GRID_SIZE];
         isEmpty = true;
         actualLimits = new int[]{46, 44, 44, 46};
     }
@@ -142,7 +141,7 @@ public class Grid {
      * @return the tile at the specified row and column
      */
     public Tile get(int row, int col) {
-        if (row >= size || col >= size || row <= 0 || col <= 0) {
+        if (row >= GRID_SIZE || col >= GRID_SIZE || row <= 0 || col <= 0) {
             return null;
         }
         return tiles[row][col];
@@ -178,11 +177,12 @@ public class Grid {
      * @throws QwirkleException if the position already contains a tile.
      */
     private void addTile(int row, int col, Tile tile) throws QwirkleException {
-        if (tiles[row][col] == null) {
-            tiles[row][col] = tile;
-        } else {
+        if (tiles[row][col] != null) {
             throw new QwirkleException("The position (" + row + ", " + col + ") " + "already contain a tile");
         }
+
+        tiles[row][col] = tile;
+
     }
 
     /**
