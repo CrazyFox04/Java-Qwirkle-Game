@@ -2,7 +2,6 @@ package g60904.qwirkle.app;
 
 import g60904.qwirkle.model.*;
 import g60904.qwirkle.view.View;
-
 import java.util.List;
 import java.util.Scanner;
 
@@ -13,14 +12,16 @@ public class App {
 
     public static void main(String[] args) {
         View.displayWelcome();
-        List<Player> playersList = View.askPlayerName();
-        game = new Game(playersList);
-        while (!game.isOver()) {
+        if (!loadASavedGame()) {
+            List<Player> playersList = View.askPlayerName();
+            game = new Game(playersList);
+        }
+        do {
             View.display(new GridView(game.getGrid()));
             View.display(game.getCurrentPlayerName(), game.getCurrentPlayerHand(), game.getCurrentPlayerScore());
             askCommandFromCurrentPlayer();
-        }
-        View.displayEnd(playersList);
+        } while (!game.isOver());
+        View.displayEnd(game.getPlayers());
     }
 
     private static void askCommandFromCurrentPlayer() {
@@ -34,8 +35,35 @@ public class App {
             case "m" -> placeTilesAtPos(command);
             case "f" -> placeFirstTiles(command);
             case "p" -> pass();
+            case "q" -> quit();
             default -> View.displayError("This command, doesn't exist. Please try again.");
         }
+    }
+    private static void quit() {
+        View.askToSaveTheGame();
+        String answer = clavier.nextLine();
+        answer = answer.toLowerCase();
+        while (!answer.equals("y") && !answer.equals("n")) {
+            answer = clavier.nextLine();
+        }
+        if (answer.equals("y")) {
+            game.write("test");
+            System.exit(0);
+        }
+
+    }
+    private static boolean loadASavedGame() {
+        View.askToRestoreSavedGame();
+        String answer = clavier.nextLine();
+        answer = answer.toLowerCase();
+        while (!answer.equals("y") && !answer.equals("n")) {
+            answer = clavier.nextLine();
+        }
+        if (answer.equals("y")) {
+            game = Game.getFromFile("test");
+            Game.setBagInstanceAfterSerialization(game);
+        }
+        return answer.equals("y");
     }
 
     private static void pass() {
@@ -113,7 +141,7 @@ public class App {
 
     private static boolean positionIsInGrid(int row, int col) {
         var gridSize = game.getGrid().getGRID_SIZE();
-        return row > 0 || row < gridSize && col > 0 || col < gridSize;
+        return row > 0 && row < gridSize && col > 0 && col < gridSize;
     }
 
     private static boolean positionIsCorrect(String[] command, int startPos) {
@@ -178,7 +206,7 @@ public class App {
         String[] parts = command.split(" ");
         if (parts.length != 4) {
             View.displayError("The number of parameters entered is incorrect. Please try again.");
-        } else if (positionIsCorrect(parts, 1)) {
+        } else if (!positionIsCorrect(parts, 1)) {
             View.displayError("The position you entered doesn't correspond to a correct position on the grid");
         } else if (!handPositionAreInHand(parts, 3)) {
             View.displayError("The position of the tile in the user's hand does not correspond to any known.");

@@ -1,5 +1,6 @@
 package g60904.qwirkle.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -7,7 +8,7 @@ import java.util.List;
 /**
  * The {@code Player} class represents a player in the Qwirkle game.
  */
-public class Player {
+public class Player implements Serializable {
     /**
      * The name of the player.
      */
@@ -49,6 +50,9 @@ public class Player {
 
     public int getScore() {
         return score;
+    }
+    public void setScore(int score) {
+        this.score = score;
     }
 
     /**

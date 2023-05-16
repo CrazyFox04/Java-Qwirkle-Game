@@ -1,16 +1,27 @@
 package g60904.qwirkle.model;
 
+import g60904.qwirkle.view.View;
+
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.List;
 
 /**
  * This class represents a Qwirkle game. It contains a grid where tiles can be placed and an array of players.
  * The current player is also tracked by the game.
  */
-public class Game {
+public class Game implements Serializable {
     /**
      * The grid where tiles are placed.
      */
     private final Grid grid;
+
+    public List<Player> getPlayers() {
+        return List.of(players);
+    }
+
     /**
      * The array of players.
      */
@@ -20,6 +31,7 @@ public class Game {
      */
     private int currentPlayer;
     private int numberOfPassInARow;
+    private final Bag bag = Bag.getInstance();
 
     /**
      * Constructs a new Qwirkle game with the specified list of players.
@@ -34,6 +46,32 @@ public class Game {
         }
         currentPlayer = 0;
         players[currentPlayer].refill();
+    }
+
+    public void write(String fileName) {
+        try (ObjectOutput out = new ObjectOutputStream(
+                Files.newOutputStream(Paths.get(fileName + ".qwirkleGameSave"), StandardOpenOption.CREATE))) {
+            out.writeObject(this);
+            View.serializationIsOk();
+        } catch (IOException e) {
+            throw new QwirkleException("Error during serialization !!!");
+        }
+    }
+
+    public static Game getFromFile(String savedFileName) {
+        try {
+            ObjectInput in = new ObjectInputStream(
+                    Files.newInputStream(Paths.get(savedFileName + ".qwirkleGameSave"), StandardOpenOption.READ)
+            );
+            return (Game) in.readObject();
+        } catch (IOException e) {
+            throw new QwirkleException("Error during reading !!!");
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public static void setBagInstanceAfterSerialization(Game game) {
+        game.bag.setInstance(game.bag);
     }
 
     /**
@@ -148,11 +186,26 @@ public class Game {
     }
 
     public boolean isOver() {
-        if (numberOfPassInARow >= players.length && isBagEmpty()) {
-            return true;
-        } else if (players[getPreviousPlayer()].getHand().isEmpty() && isBagEmpty()) {
+        if (players[getPreviousPlayer()].getHand().isEmpty() && isBagEmpty()) {
             players[getPreviousPlayer()].addScore(6);
             return true;
+        } else if (!atLeastOnePlayerCanPlay() && isBagEmpty()) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean atLeastOnePlayerCanPlay() {
+        for (Player player : players) {
+            for (Tile tile : player.getHand()) {
+                for (int row = 0; row < grid.getGRID_SIZE(); row++) {
+                    for (int col = 0; col < grid.getGRID_SIZE(); col++) {
+                        if (grid.canAdd(row, col, tile)) {
+                            return true;
+                        }
+                    }
+                }
+            }
         }
         return false;
     }

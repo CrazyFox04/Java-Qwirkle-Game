@@ -140,4 +140,13 @@ public class View {
         }
         System.out.println("==================================================================================");
     }
+    public static void askToRestoreSavedGame() {
+        System.out.println("Do you want to restore a previous Game file ?");
+    }
+    public static void askToSaveTheGame() {
+        System.out.println("Do you want to save the game to restore it later ?");
+    }
+    public static void serializationIsOk() {
+        System.out.println("Saving OK");
+    }
 }

@@ -1,5 +1,6 @@
 package g60904.qwirkle.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.stream.Collectors;
  * the second element (index 1) indicates the minimum column, the third element (index 2) indicates
  * the maximum row, and the fourth element (index 3) indicates the maximum column.
  */
-public class Grid {
+public class Grid implements Serializable {
     private final Tile[][] tiles;
     private boolean isEmpty;
     private final int[] actualLimits;
@@ -55,6 +56,21 @@ public class Grid {
         modifyLimits(d, line.length, 45, 45);
         isEmpty = false;
         return calculatePoint(45, 45);
+    }
+
+    public boolean canAdd(int row, int col, Tile tile) {
+        if (tiles[row][col] == null) {
+            addTile(row, col, tile);
+            if (moveRespectRules(row, col)) {
+                removeTile(row, col);
+                return true;
+            } else {
+                removeTile(row, col);
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -167,7 +183,8 @@ public class Grid {
     public int[] getActualLimits() {
         return actualLimits;
     }
-    public int getGRID_SIZE(){
+
+    public int getGRID_SIZE() {
         return GRID_SIZE;
     }
 

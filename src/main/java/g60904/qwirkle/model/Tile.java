@@ -1,5 +1,7 @@
 package g60904.qwirkle.model;
 
+import java.io.Serializable;
+
 /**
  * A record that represents a tile in a Qwirkle game, consisting of a color and a shape.
  * <p>
@@ -12,7 +14,7 @@ package g60904.qwirkle.model;
  * @param color the color of the tile
  * @param shape the shape of the tile
  */
-public record Tile(Color color, Shape shape) {
+public record Tile(Color color, Shape shape) implements Serializable {
     @Override
     public String toString() {
         return color().toString() + shape + "\033[m";
