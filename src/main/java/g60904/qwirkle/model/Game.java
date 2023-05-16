@@ -71,7 +71,7 @@ public class Game implements Serializable {
         }
     }
     public static void setBagInstanceAfterSerialization(Game game) {
-        game.bag.setInstance(game.bag);
+        Bag.setInstance(game.bag);
     }
 
     /**
