@@ -14,7 +14,7 @@ import java.util.Scanner;
  * It depends on the GridView and Player classes from the model package to display the game state.
  */
 public class View {
-    private static final Scanner clavier = new Scanner(System.in);
+    private static Scanner clavier = new Scanner(System.in);
 
     /**
      * Displays the game board represented by the given grid.
@@ -140,8 +140,31 @@ public class View {
         }
         System.out.println("==================================================================================");
     }
-    public static void askToRestoreSavedGame() {
-        System.out.println("Do you want to restore a previous Game file ?");
+
+    public static boolean playerWantToLoadAGame() {
+        System.out.print("Do you want to restore a previous Game file ? (y/n) ");
+        String answer = clavier.nextLine();
+        answer = answer.toLowerCase();
+        while (!answer.equals("y") && !answer.equals("n")) {
+            System.out.print("Please enter 'y' or 'n' to answer the question : ");
+            answer = clavier.nextLine();
+            answer = answer.toLowerCase();
+        }
+        System.out.println();
+        return answer.equals("y");
+    }
+    public static boolean playerWantToSaveAGame() {
+        clavier = new Scanner(System.in);
+        System.out.print("Do you want to save the game to restore it later ? (y/n) ");
+        String answer = clavier.nextLine();
+        answer = answer.toLowerCase();
+        while (!answer.equals("y") && !answer.equals("n")) {
+            System.out.print("Please enter 'y' or 'n' to answer the question : ");
+            answer = clavier.nextLine();
+            answer = answer.toLowerCase();
+        }
+        System.out.println();
+        return answer.equals("y");
     }
     public static void askToSaveTheGame() {
         System.out.println("Do you want to save the game to restore it later ?");

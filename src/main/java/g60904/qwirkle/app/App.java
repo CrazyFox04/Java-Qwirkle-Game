@@ -40,30 +40,28 @@ public class App {
         }
     }
     private static void quit() {
-        View.askToSaveTheGame();
-        String answer = clavier.nextLine();
-        answer = answer.toLowerCase();
-        while (!answer.equals("y") && !answer.equals("n")) {
-            answer = clavier.nextLine();
-        }
-        if (answer.equals("y")) {
-            game.write("test");
-            System.exit(0);
-        }
-
+        var askQuestionAgain = false;
+        do {
+            if (View.playerWantToSaveAGame()) {
+                askQuestionAgain = !game.write();
+            } else {
+                askQuestionAgain = false;
+            }
+        } while (askQuestionAgain);
+        System.exit(0);
     }
     private static boolean loadASavedGame() {
-        View.askToRestoreSavedGame();
-        String answer = clavier.nextLine();
-        answer = answer.toLowerCase();
-        while (!answer.equals("y") && !answer.equals("n")) {
-            answer = clavier.nextLine();
+        Game serializedGame = null;
+        while (serializedGame == null) {
+            if (View.playerWantToLoadAGame()) {
+                serializedGame = Game.getFromFile();
+            } else {
+                return false;
+            }
         }
-        if (answer.equals("y")) {
-            game = Game.getFromFile("test");
-            Game.setBagInstanceAfterSerialization(game);
-        }
-        return answer.equals("y");
+        game = serializedGame;
+        Game.setBagInstanceAfterSerialization(game);
+        return true;
     }
 
     private static void pass() {

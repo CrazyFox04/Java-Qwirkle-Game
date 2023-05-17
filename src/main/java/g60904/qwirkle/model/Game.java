@@ -2,10 +2,8 @@ package g60904.qwirkle.model;
 
 import g60904.qwirkle.view.View;
 
+import javax.swing.*;
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.List;
 
 /**
@@ -17,6 +15,7 @@ public class Game implements Serializable {
      * The grid where tiles are placed.
      */
     private final Grid grid;
+    static final JFileChooser fc = new JFileChooser();
 
     public List<Player> getPlayers() {
         return List.of(players);
@@ -48,27 +47,36 @@ public class Game implements Serializable {
         players[currentPlayer].refill();
     }
 
-    public void write(String fileName) {
-        try (ObjectOutput out = new ObjectOutputStream(
-                Files.newOutputStream(Paths.get(fileName + ".qwirkleGameSave"), StandardOpenOption.CREATE))) {
-            out.writeObject(this);
-            View.serializationIsOk();
-        } catch (IOException e) {
-            throw new QwirkleException("Error during serialization !!!");
+    public boolean write() {
+        int returnVal = fc.showSaveDialog(null);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            File file = fc.getSelectedFile();
+            try (var fileOutputStream = new FileOutputStream(file)) {
+                var outputStream = new ObjectOutputStream(fileOutputStream);
+                outputStream.writeObject(this);
+                return true;
+            } catch (IOException e) {
+                throw new QwirkleException("Error while writing the file, double-checked that you have " +
+                        "sufficient rights to perform this action.");
+            }
         }
+        return false;
     }
 
-    public static Game getFromFile(String savedFileName) {
-        try {
-            ObjectInput in = new ObjectInputStream(
-                    Files.newInputStream(Paths.get(savedFileName + ".qwirkleGameSave"), StandardOpenOption.READ)
-            );
-            return (Game) in.readObject();
-        } catch (IOException e) {
-            throw new QwirkleException("Error during reading !!!");
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
+    public static Game getFromFile() {
+        int returnVal = fc.showOpenDialog(null);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            File file = fc.getSelectedFile();
+            try (var fileInputStream = new FileInputStream(file)) {
+                ObjectInput in = new ObjectInputStream(
+                        fileInputStream
+                );
+                return (Game) in.readObject();
+            } catch (IOException | ClassNotFoundException e) {
+                throw new QwirkleException("Error while reading the file, it may be corrupted or simply doesn't exist.");
+            }
         }
+        return null;
     }
     public static void setBagInstanceAfterSerialization(Game game) {
         Bag.setInstance(game.bag);
