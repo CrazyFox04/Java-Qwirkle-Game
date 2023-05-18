@@ -14,10 +14,10 @@ public enum Direction {
     private final char nickname;
 
     /**
-     * Constructs a new Direction with the specified deltaRow and deltaCol.
-     *
+     * Constructs a new Direction with the specified deltaRow, deltaCol, and nickname.
      * @param row the deltaRow associated with this Direction
      * @param col the deltaCol associated with this Direction
+     * @param nickname the nickname associated with this Direction
      */
     Direction(int row, int col, char nickname) {
         this.deltaRow = row;
@@ -51,6 +51,10 @@ public enum Direction {
         return deltaCol;
     }
 
+    /**
+     * Returns the nickname associated with this Direction.
+     * @return the nickname associated with this Direction
+     */
     public char getNickname() {
         return nickname;
     }

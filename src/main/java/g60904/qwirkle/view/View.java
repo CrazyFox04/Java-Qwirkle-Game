@@ -2,7 +2,6 @@ package g60904.qwirkle.view;
 
 import g60904.qwirkle.model.Game;
 import g60904.qwirkle.model.GridView;
-import g60904.qwirkle.model.Player;
 import g60904.qwirkle.model.Tile;
 
 import java.util.ArrayList;
@@ -57,7 +56,9 @@ public class View {
     /**
      * Displays the name of the player and the tiles in their hand.
      *
-     * @param player the Player object whose hand is to be displayed
+     * @param playerName the name of the player
+     * @param playerHand the tiles in the player's hand
+     * @param playerScore the score of the player
      */
     public static void display(String playerName, List<Tile> playerHand, int playerScore) {
         System.out.println(playerName + " it's your turn, " + "you have in your hand (0 - " + (playerHand.size() - 1) + ") : " + playerHand);
@@ -96,7 +97,11 @@ public class View {
     public static void displayError(String message) {
         System.err.println(message);
     }
-
+    /**
+     * Asks the players for their names and returns a list of player names.
+     *
+     * @return a list of player names
+     */
     public static List<String> askPlayerName() {
         List<String> playerNameList = new ArrayList<>();
         System.out.print("How many players would like to play ? ");
@@ -117,7 +122,11 @@ public class View {
         System.out.println();
         return playerNameList;
     }
-
+    /**
+     * Reads an integer from the console input.
+     *
+     * @return the integer value read from the console
+     */
     private static int lireEntier() {
         while (!clavier.hasNextInt()) {
             clavier.next();
@@ -127,7 +136,9 @@ public class View {
         clavier.nextLine();
         return result;
     }
-
+    /**
+     * Displays the welcome message for the Qwirkle game.
+     */
     public static void displayWelcome() {
         System.out.println(
                 """
@@ -137,6 +148,12 @@ public class View {
                         """
         );
     }
+    /**
+     * Displays the end-of-game message with the final scores of each player.
+     *
+     * @param playersName  an array of player names
+     * @param playersScore an array of player scores
+     */
     public static void displayEnd(String[] playersName, int[] playersScore) {
         System.out.println("The game is finished !");
         for (int i = 0; i < playersName.length; i++) {
@@ -144,7 +161,11 @@ public class View {
         }
         System.out.println("==================================================================================");
     }
-
+    /**
+     * Asks the player if they want to load a previous game.
+     *
+     * @return true if the player wants to load a game, false otherwise
+     */
     public static boolean playerWantToLoadAGame() {
         System.out.print("Do you want to restore a previous Game file ? (y/n) ");
         String answer = clavier.nextLine();
@@ -157,6 +178,11 @@ public class View {
         System.out.println();
         return answer.equals("y");
     }
+    /**
+     * Asks the player if they want to save the current game.
+     *
+     * @return true if the player wants to save the game, false otherwise
+     */
     public static boolean playerWantToSaveAGame() {
         System.out.print("Do you want to save the game to restore it later ? (y/n) ");
         String answer = clavier.nextLine();
@@ -169,6 +195,11 @@ public class View {
         System.out.println();
         return answer.equals("y");
     }
+    /**
+     * Reads a command from the console input.
+     *
+     * @return the command entered by the player
+     */
     public static String getCommand() {
         System.out.print("Command : ");
         String command = clavier.nextLine();

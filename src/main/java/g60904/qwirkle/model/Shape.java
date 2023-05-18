@@ -7,7 +7,12 @@ package g60904.qwirkle.model;
  */
 public enum Shape {
     CROSS, SQUARE, ROUND, STAR, PLUS, DIAMOND;
-
+    /**
+     * Returns a string representation of the shape.
+     * The string representation corresponds to the symbol associated with the shape.
+     *
+     * @return the string representation of the shape
+     */
     @Override
     public String toString() {
         return switch (this) {

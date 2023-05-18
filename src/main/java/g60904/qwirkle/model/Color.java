@@ -14,10 +14,18 @@ public enum Color {
     PURPLE("\033[35m");
     private final String code;
 
+    /**
+     * Constructs a Color object with the specified color code.
+     * @param code the color code associated with the color.
+     */
     Color(String code) {
         this.code = code;
     }
 
+    /**
+     * Returns the color code associated with the color.
+     * @return the color code associated with the color.
+     */
     @Override
     public String toString() {
         return this.code;

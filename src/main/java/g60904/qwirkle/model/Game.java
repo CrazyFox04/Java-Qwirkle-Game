@@ -27,8 +27,8 @@ public class Game implements Serializable {
     private static final int MAX_NUMBER_PLAYERS = 5;
     /**
      * Constructs a new Qwirkle game with the specified list of players.
-     *
      * @param playersNameList the list of players to participate in the game
+     * @throws QwirkleException if the number of players exceeds the maximum limit
      */
     public Game(List<String> playersNameList) {
         if (playersNameList.size()>MAX_NUMBER_PLAYERS) {
@@ -43,6 +43,11 @@ public class Game implements Serializable {
         players[currentPlayer].refill();
     }
 
+    /**
+     * Writes the current game state to a file using serialization.
+     * @return true if the write operation is successful, false otherwise
+     * @throws QwirkleException if there is an error while writing the file
+     */
     public boolean write() {
         int returnVal = fc.showSaveDialog(null);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -59,6 +64,11 @@ public class Game implements Serializable {
         return false;
     }
 
+    /**
+     * Reads a game state from a file using deserialization.
+     * @return the Game object read from the file
+     * @throws QwirkleException if there is an error while reading the file
+     */
     public static Game getFromFile() {
         int returnVal = fc.showOpenDialog(null);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -75,6 +85,10 @@ public class Game implements Serializable {
         return null;
     }
 
+    /**
+     * Returns the names of all players participating in the game.
+     * @return an array of player names
+     */
     public String[] getPlayersName() {
         var playersName = new String[players.length];
         for (int i = 0; i < players.length; i++) {
@@ -82,6 +96,11 @@ public class Game implements Serializable {
         }
         return playersName;
     }
+
+    /**
+     * Returns the scores of all players participating in the game.
+     * @return an array of player scores
+     */
     public int[] getPlayersScore() {
         var playersScore = new int[players.length];
         for (int i = 0; i < players.length; i++) {
@@ -89,9 +108,16 @@ public class Game implements Serializable {
         }
         return playersScore;
     }
+    /**
+     * Returns the maximum number of players allowed in the game.
+     * @return the maximum number of players
+     */
     public static int getMaxNumberPlayers() {
         return MAX_NUMBER_PLAYERS;
     }
+    /**
+     * Sets the bag instance after deserialization.
+     */
     public static void setBagInstanceAfterSerialization(Game game) {
         Bag.setInstance(game.bag);
     }
@@ -114,6 +140,10 @@ public class Game implements Serializable {
         return players[currentPlayer].getHand();
     }
 
+    /**
+     * Returns the score of the current player.
+     * @return the score of the current player
+     */
     public int getCurrentPlayerScore() {
         return players[currentPlayer].getScore();
     }
@@ -199,13 +229,20 @@ public class Game implements Serializable {
         players[currentPlayer].refill();
     }
 
+    /**
+     * Checks if the game is over.
+     * @return true if the game is over, false otherwise
+     */
     public boolean isOver() {
         if (players[getPreviousPlayer()].getHand().isEmpty() && isBagEmpty()) {
             players[getPreviousPlayer()].addScore(6);
             return true;
         } else return !atLeastOnePlayerCanPlay() && isBagEmpty();
     }
-
+    /**
+     * Checks if at least one player cannot play any tiles.
+     * @return true if at least one player cannot play any tiles, false otherwise
+     */
     private boolean atLeastOnePlayerCanPlay() {
         for (Player player : players) {
             for (Tile tile : player.getHand()) {
@@ -220,11 +257,18 @@ public class Game implements Serializable {
         }
         return false;
     }
-
+    /**
+     * Returns the index of the previous player.
+     *
+     * @return the index of the previous player
+     */
     private int getPreviousPlayer() {
         return currentPlayer - 1 > 0 ? currentPlayer - 1 : players.length - 1;
     }
-
+    /**
+     * Checks if the bag is empty.
+     * @return true if the bag is empty, false otherwise
+     */
     private boolean isBagEmpty() {
         for (Player player : players) {
             if (player.getHand().size() < 6) {

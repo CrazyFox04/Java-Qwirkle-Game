@@ -38,7 +38,11 @@ public class GridView {
     public boolean isEmpty() {
         return grid.isEmpty();
     }
-
+    /**
+     * Gets the size limits of the actual grid.
+     *
+     * @return An array of 4 integers representing the size limits used in the game board.
+     */
     public int[] getGridLimits() {
         return grid.getActualLimits();
     }

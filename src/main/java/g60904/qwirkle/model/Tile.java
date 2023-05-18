@@ -15,6 +15,12 @@ import java.io.Serializable;
  * @param shape the shape of the tile
  */
 public record Tile(Color color, Shape shape) implements Serializable {
+    /**
+     * Returns a string representation of the tile.
+     * The string representation consists of the color followed by the shape symbol.
+     *
+     * @return the string representation of the tile
+     */
     @Override
     public String toString() {
         return color().toString() + shape + "\033[m";

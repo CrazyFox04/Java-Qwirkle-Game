@@ -10,9 +10,9 @@ import java.util.stream.Collectors;
  * The Grid class represents the game board of Qwirkle. It contains a 2D array of Tiles
  * which represents the board tiles and a boolean flag indicating if the grid is empty.
  * It contains an actualLimits attribute, which is an array of 4 integers representing
- * the size limits used in the game board. The first element (index 0) indicates the minimum row,
- * the second element (index 1) indicates the minimum column, the third element (index 2) indicates
- * the maximum row, and the fourth element (index 3) indicates the maximum column.
+ * the size limits used in the game board. The first element (index 0) indicates the maximum row,
+ * the second element (index 1) indicates the minimum col, the third element (index 2) indicates
+ * the min row, and the fourth element (index 3) indicates the maximum column.
  */
 public class Grid implements Serializable {
     private final Tile[][] tiles;
@@ -57,7 +57,13 @@ public class Grid implements Serializable {
         isEmpty = false;
         return calculatePoint(45, 45);
     }
-
+    /**
+     * Checks if a Tile can be added to the Grid at the specified position.
+     *
+     * @param row The row index of the position.
+     * @param col The column index of the position.
+     * @return {@code true} if the Tile can be added at the specified position, {@code false} otherwise.
+     */
     public boolean canAdd(int row, int col, Tile tile) {
         if (tiles[row][col] == null) {
             addTile(row, col, tile);
@@ -174,9 +180,9 @@ public class Grid implements Serializable {
 
     /**
      * Returns the actualLimits attribute, which is an array of 4 integers representing
-     * the size limits used in the game board. The first element (index 0) indicates the minimum row,
+     * the size limits used in the game board. The first element (index 0) indicates the maximum row,
      * the second element (index 1) indicates the minimum column, the third element (index 2) indicates
-     * the maximum row, and the fourth element (index 3) indicates the maximum column.
+     * the min row, and the fourth element (index 3) indicates the maximum column.
      *
      * @return an int array containing the actualLimits of the grid.
      */

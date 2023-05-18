@@ -8,7 +8,15 @@ import java.util.Scanner;
 
 public class App {
     private static Game game;
-
+    /**
+     * The main method of the Qwirkle application.
+     * It handles the game flow by displaying the welcome message, loading a saved game if requested,
+     * or creating a new game with player names if no saved game is available.
+     * Then, it enters a loop where it displays the game state, asks for a command from the current player,
+     * and continues until the game is over. Finally, it displays the end-of-game message with the final scores.
+     *
+     * @param args command-line arguments (not used)
+     */
     public static void main(String[] args) {
         View.displayWelcome();
         if (!loadASavedGame()) {
@@ -22,7 +30,9 @@ public class App {
         } while (!game.isOver());
         View.displayEnd(game.getPlayersName(), game.getPlayersScore());
     }
-
+    /**
+     * Asks the current player for a command and executes the corresponding action based on the command entered.
+     */
     private static void askCommandFromCurrentPlayer() {
         String command = View.getCommand();
         String[] parts = command.split(" ");
@@ -37,6 +47,12 @@ public class App {
             default -> View.displayError("This command, doesn't exist. Please try again.");
         }
     }
+    /**
+     * Quits the game based on the player's decision.
+     * If the player wants to save the game, it prompts for the save file name and attempts to write the game state.
+     * If the saving process fails, it asks the question again.
+     * If the player doesn't want to save the game, it displays the end-of-game message and terminates the application.
+     */
     private static void quit() {
         boolean askQuestionAgain;
         do {
@@ -49,6 +65,13 @@ public class App {
         } while (askQuestionAgain);
         System.exit(0);
     }
+    /**
+     * Loads a saved game if the player chooses to do so.
+     * It prompts the player to load a game and attempts to read the saved game file.
+     * If the loading process fails, it asks the question again.
+     *
+     * @return true if a saved game was successfully loaded, false otherwise
+     */
     private static boolean loadASavedGame() {
         Game serializedGame = null;
         while (serializedGame == null) {
@@ -62,11 +85,18 @@ public class App {
         Game.setBagInstanceAfterSerialization(game);
         return true;
     }
-
+    /**
+     * Passes the turn for the current player.
+     */
     private static void pass() {
         game.pass();
     }
-
+    /**
+     * Places the first tiles on the grid based on the command entered.
+     * It checks the command syntax and validity of positions and direction, then calls the corresponding game method.
+     *
+     * @param command the command entered by the player
+     */
     private static void placeFirstTiles(String command) {
         String[] splitCommand = command.split(" ");
         if (splitCommand.length < 2 || (splitCommand.length == 2 && !splitCommand[1].matches("\\d"))) {
@@ -94,7 +124,12 @@ public class App {
             }
         }
     }
-
+    /**
+     * Checks if the hand positions provided in the command are valid.
+     *
+     * @param command the command entered by the player
+     * @return true if the hand positions are valid, false otherwise
+     */
     private static boolean handPositionAreInHandTAP(String[] command) {
         try {
             int sizeOfHand = game.getCurrentPlayerHand().size();
@@ -110,7 +145,12 @@ public class App {
             return false;
         }
     }
-
+    /**
+     * Checks if the grid positions provided in the command are valid.
+     *
+     * @param command the command entered by the player
+     * @return true if the grid positions are valid, false otherwise
+     */
     private static boolean positionIsInGridTAP(String[] command) {
         try {
             for (int i = 1; i < command.length; i += 3) {
@@ -124,7 +164,13 @@ public class App {
             return false;
         }
     }
-
+    /**
+     * Checks if the hand positions provided in the command are valid.
+     *
+     * @param command   the command entered by the player
+     * @param firstPos  the position in the command array where the hand positions start
+     * @return true if the hand positions are valid, false otherwise
+     */
     private static boolean handPositionAreInHand(String[] command, int firstPos) {
         try {
             int sizeOfHand = game.getCurrentPlayerHand().size();
@@ -140,12 +186,24 @@ public class App {
             return false;
         }
     }
-
+    /**
+     * Checks if the position provided is within the grid boundaries.
+     *
+     * @param row the row coordinate
+     * @param col the column coordinate
+     * @return true if the position is within the grid, false otherwise
+     */
     private static boolean positionIsInGrid(int row, int col) {
         var gridSize = game.getGrid().getGRID_SIZE();
         return row > 0 && row < gridSize && col > 0 && col < gridSize;
     }
-
+    /**
+     * Checks if the position provided in the command is correct.
+     *
+     * @param command   the command entered by the player
+     * @param startPos  the position in the command array where the position starts
+     * @return true if the position is correct, false otherwise
+     */
     private static boolean positionIsCorrect(String[] command, int startPos) {
         var row = command[startPos];
         var col = command[startPos + 1];
@@ -156,7 +214,12 @@ public class App {
             return false;
         }
     }
-
+    /**
+     * Places tiles at specific positions on the grid based on the command entered.
+     * It checks the command syntax and validity of positions, then calls the corresponding game method.
+     *
+     * @param command the command entered by the player
+     */
     private static void placeTilesAtPos(String command) {
         String[] parts = command.split(" ");
         if (parts.length < 4) {
@@ -177,7 +240,12 @@ public class App {
             }
         }
     }
-
+    /**
+     * Places a line of tiles on the grid based on the command entered.
+     * It checks the command syntax and validity of positions and direction, then calls the corresponding game method.
+     *
+     * @param command the command entered by the player
+     */
     private static void placeLineOfTiles(String command) {
         String[] parts = command.split(" ");
         if (parts.length < 5) {
@@ -203,7 +271,12 @@ public class App {
             }
         }
     }
-
+    /**
+     * Places one tile on the grid based on the command entered.
+     * It checks the command syntax and validity of position, then calls the corresponding game method.
+     *
+     * @param command the command entered by the player
+     */
     private static void placeOneTile(String command) {
         String[] parts = command.split(" ");
         if (parts.length != 4) {
@@ -223,7 +296,12 @@ public class App {
             }
         }
     }
-
+    /**
+     * Gets the direction enum value based on the direction string.
+     *
+     * @param d the direction string
+     * @return the corresponding direction enum value
+     */
     private static Direction getDirection(String d) {
         return switch (d) {
             case "l" -> Direction.LEFT;
@@ -234,7 +312,12 @@ public class App {
                     + "Please try again.");
         };
     }
-
+    /**
+     * Checks if the direction provided is one of the recognized directions.
+     *
+     * @param enteredDirectionNickname the direction string
+     * @return true if the direction is recognized, false otherwise
+     */
     private static boolean isOneOfTheDirection(String enteredDirectionNickname) {
         for (Direction direction : Direction.values()) {
             if (direction.getNickname() == enteredDirectionNickname.toCharArray()[0]) {

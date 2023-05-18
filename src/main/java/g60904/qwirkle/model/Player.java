@@ -47,7 +47,11 @@ public class Player implements Serializable {
     public List<Tile> getHand() {
         return Collections.unmodifiableList(tiles);
     }
-
+    /**
+     * Returns the score of the player.
+     *
+     * @return the score of the player
+     */
     public int getScore() {
         return score;
     }
@@ -74,7 +78,11 @@ public class Player implements Serializable {
             tiles.remove(t);
         }
     }
-
+    /**
+     * Adds the specified value to the player's score.
+     *
+     * @param value the value to be added to the player's score
+     */
     public void addScore(int value) {
         this.score += value;
     }

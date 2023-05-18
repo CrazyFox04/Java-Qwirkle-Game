@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class represents a bag of tiles used for a game. It is implemented as a Singleton and can only have one instance
- * created. The bag contains tiles with different colors and shapes. The tiles can be randomly drawn from the bag.
+ * This class represents a bag of tiles used for a game. It is implemented as a Singleton and can only have one instance created.
+ * The bag contains tiles with different colors and shapes. The tiles can be randomly drawn from the bag.
  */
 public class Bag implements Serializable{
     private static Bag instance = new Bag();
@@ -31,6 +31,11 @@ public class Bag implements Serializable{
     public static Bag getInstance() {
         return instance;
     }
+
+    /**
+     * Sets the instance of the Bag class.
+     * @param bag the instance to be set.
+     */
     public static void setInstance(Bag bag) {
         instance = bag;
     }
