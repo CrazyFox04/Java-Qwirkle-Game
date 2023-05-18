@@ -69,7 +69,7 @@ public class Player implements Serializable {
      *
      * @param ts the tiles to be removed from the player's hand
      */
-    public void remove(Tile... ts) {
+    public void removeTilesFromHand(Tile... ts) {
         for (Tile t : ts) {
             tiles.remove(t);
         }

@@ -302,7 +302,7 @@ public class Game implements Serializable {
      * @param is The indexes of the tiles to be removed from the current player's hand.
      */
     private void removeTileOfPlayer(int... is) {
-        players[currentPlayer].remove(getTileOfPlayer(is));
+        players[currentPlayer].removeTilesFromHand(getTileOfPlayer(is));
         players[currentPlayer].refill();
     }
 }
