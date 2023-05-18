@@ -15,7 +15,7 @@ import java.util.Scanner;
  * It depends on the GridView and Player classes from the model package to display the game state.
  */
 public class View {
-    private static Scanner clavier = new Scanner(System.in);
+    private static final Scanner clavier = new Scanner(System.in);
 
     /**
      * Displays the game board represented by the given grid.
@@ -97,8 +97,8 @@ public class View {
         System.err.println(message);
     }
 
-    public static List<Player> askPlayerName() {
-        List<Player> playerList = new ArrayList<>();
+    public static List<String> askPlayerName() {
+        List<String> playerNameList = new ArrayList<>();
         System.out.print("How many players would like to play ? ");
         int n = 0;
         while (n < 1 || n > Game.getMaxNumberPlayers()) {
@@ -110,12 +110,12 @@ public class View {
         System.out.println();
         System.out.println("Enter the names of the players, press 'enter' to confirm the name of each player.");
         for (int i = 0; i < n; i++) {
-            System.out.print("Player " + (i + 1) + " : ");
+            System.out.print("Player " + (i + 1) + " name : ");
             var playerName = clavier.nextLine();
-            playerList.add(new Player(playerName));
+            playerNameList.add(playerName);
         }
         System.out.println();
-        return playerList;
+        return playerNameList;
     }
 
     private static int lireEntier() {
@@ -137,10 +137,10 @@ public class View {
                         """
         );
     }
-    public static void displayEnd(List<Player> players) {
+    public static void displayEnd(String[] playersName, int[] playersScore) {
         System.out.println("The game is finished !");
-        for (Player player : players) {
-            System.out.println(player.getName() + ", you finished the game with " + player.getScore() + " points.");
+        for (int i = 0; i < playersName.length; i++) {
+            System.out.println(playersName[i] + ", you finished the game with " + playersScore[i] + " points.");
         }
         System.out.println("==================================================================================");
     }

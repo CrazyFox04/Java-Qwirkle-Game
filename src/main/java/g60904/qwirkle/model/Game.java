@@ -28,17 +28,17 @@ public class Game implements Serializable {
     /**
      * Constructs a new Qwirkle game with the specified list of players.
      *
-     * @param listOfPlayers the list of players to participate in the game
+     * @param playersNameList the list of players to participate in the game
      */
-    public Game(List<Player> listOfPlayers) {
-        if (listOfPlayers.size()>MAX_NUMBER_PLAYERS) {
+    public Game(List<String> playersNameList) {
+        if (playersNameList.size()>MAX_NUMBER_PLAYERS) {
             throw new QwirkleException("You can't be more than " + MAX_NUMBER_PLAYERS + " players.");
         }
-        grid = new Grid();
-        players = new Player[listOfPlayers.size()];
-        for (int i = 0; i < listOfPlayers.size(); i++) {
-            players[i] = listOfPlayers.get(i);
+        players = new Player[playersNameList.size()];
+        for (int i = 0; i < players.length; i++) {
+            players[i] = new Player(playersNameList.get(i));
         }
+        grid = new Grid();
         currentPlayer = 0;
         players[currentPlayer].refill();
     }
@@ -75,8 +75,19 @@ public class Game implements Serializable {
         return null;
     }
 
-    public List<Player> getPlayers() {
-        return List.of(players);
+    public String[] getPlayersName() {
+        var playersName = new String[players.length];
+        for (int i = 0; i < players.length; i++) {
+            playersName[i] = players[i].getName();
+        }
+        return playersName;
+    }
+    public int[] getPlayersScore() {
+        var playersScore = new int[players.length];
+        for (int i = 0; i < players.length; i++) {
+            playersScore[i] = players[i].getScore();
+        }
+        return playersScore;
     }
     public static int getMaxNumberPlayers() {
         return MAX_NUMBER_PLAYERS;

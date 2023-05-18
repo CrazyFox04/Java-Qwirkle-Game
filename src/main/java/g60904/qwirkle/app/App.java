@@ -12,15 +12,15 @@ public class App {
     public static void main(String[] args) {
         View.displayWelcome();
         if (!loadASavedGame()) {
-            List<Player> playersList = View.askPlayerName(); //todo
-            game = new Game(playersList);
+            List<String> playersNameList = View.askPlayerName(); //todo
+            game = new Game(playersNameList);
         }
         do {
             View.display(new GridView(game.getGrid()));
             View.display(game.getCurrentPlayerName(), game.getCurrentPlayerHand(), game.getCurrentPlayerScore());
             askCommandFromCurrentPlayer();
         } while (!game.isOver());
-        View.displayEnd(game.getPlayers());
+        View.displayEnd(game.getPlayersName(), game.getPlayersScore());
     }
 
     private static void askCommandFromCurrentPlayer() {
@@ -44,7 +44,7 @@ public class App {
                 askQuestionAgain = !game.write();
             } else {
                 askQuestionAgain = false;
-                View.displayEnd(game.getPlayers()); // todo
+                View.displayEnd(game.getPlayersName(), game.getPlayersScore()); // todo
             }
         } while (askQuestionAgain);
         System.exit(0);
@@ -65,7 +65,6 @@ public class App {
 
     private static void pass() {
         game.pass();
-        game.incNumberOfPassInARow();
     }
 
     private static void placeFirstTiles(String command) {
