@@ -12,7 +12,7 @@ public class App {
     public static void main(String[] args) {
         View.displayWelcome();
         if (!loadASavedGame()) {
-            List<String> playersNameList = View.askPlayerName(); //todo
+            List<String> playersNameList = View.askPlayerName();
             game = new Game(playersNameList);
         }
         do {
@@ -44,7 +44,7 @@ public class App {
                 askQuestionAgain = !game.write();
             } else {
                 askQuestionAgain = false;
-                View.displayEnd(game.getPlayersName(), game.getPlayersScore()); // todo
+                View.displayEnd(game.getPlayersName(), game.getPlayersScore());
             }
         } while (askQuestionAgain);
         System.exit(0);
