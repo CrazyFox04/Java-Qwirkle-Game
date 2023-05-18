@@ -2,18 +2,17 @@ package g60904.qwirkle.app;
 
 import g60904.qwirkle.model.*;
 import g60904.qwirkle.view.View;
+
 import java.util.List;
 import java.util.Scanner;
 
 public class App {
-    private static final Scanner clavier = new Scanner(System.in);
     private static Game game;
-    private static final String[] DIRECTIONS = new String[]{"u", "d", "l", "r"};
 
     public static void main(String[] args) {
         View.displayWelcome();
         if (!loadASavedGame()) {
-            List<Player> playersList = View.askPlayerName();
+            List<Player> playersList = View.askPlayerName(); //todo
             game = new Game(playersList);
         }
         do {
@@ -25,11 +24,10 @@ public class App {
     }
 
     private static void askCommandFromCurrentPlayer() {
-        String command = clavier.nextLine();
-        command = command.toLowerCase();
+        String command = View.getCommand();
         String[] parts = command.split(" ");
         switch (parts[0]) {
-            case "h" -> displayHelp();
+            case "h" -> View.displayHelp();
             case "o" -> placeOneTile(command);
             case "l" -> placeLineOfTiles(command);
             case "m" -> placeTilesAtPos(command);
@@ -40,12 +38,13 @@ public class App {
         }
     }
     private static void quit() {
-        var askQuestionAgain = false;
+        boolean askQuestionAgain;
         do {
             if (View.playerWantToSaveAGame()) {
                 askQuestionAgain = !game.write();
             } else {
                 askQuestionAgain = false;
+                View.displayEnd(game.getPlayers()); // todo
             }
         } while (askQuestionAgain);
         System.exit(0);
@@ -70,21 +69,27 @@ public class App {
     }
 
     private static void placeFirstTiles(String command) {
-        String[] parts = command.split(" ");
-        if (parts.length < 3) {
+        String[] splitCommand = command.split(" ");
+        if (splitCommand.length < 2 || (splitCommand.length == 2 && !splitCommand[1].matches("\\d"))) {
             View.displayError("The number of parameters entered is incorrect. Please try again.");
-        } else if (!isOneOfTheDirection(parts[1])) {
+        } else if (splitCommand.length != 2 && !isOneOfTheDirection(splitCommand[1])) {
             View.displayError("The direction your entered is not recognised");
-        } else if (!handPositionAreInHand(parts, 3)) {
+        } else if (!handPositionAreInHand(splitCommand, 2) ||
+                (splitCommand.length == 2 && !handPositionAreInHand(splitCommand, 1))) {
             View.displayError("The position of the tile in the user's hand does not correspond to any known.");
         } else {
             try {
-                var d = getDirection(parts[1]);
-                var args = new int[parts.length - 2];
-                for (int i = 2; i < parts.length; i++) {
-                    args[i - 2] = Integer.parseInt(parts[i]);
+                Direction d;
+                if (splitCommand.length == 2) {
+                    game.first(Direction.RIGHT, Integer.parseInt(splitCommand[1]));
+                } else {
+                    d = getDirection(splitCommand[1]);
+                    var args = new int[splitCommand.length - 2];
+                    for (int i = 2; i < splitCommand.length; i++) {
+                        args[i - 2] = Integer.parseInt(splitCommand[i]);
+                    }
+                    game.first(d, args);
                 }
-                game.first(d, args);
             } catch (QwirkleException e) {
                 View.displayError(e.getMessage());
             }
@@ -220,11 +225,6 @@ public class App {
         }
     }
 
-    private static void displayHelp() {
-        View.displayHelp();
-        View.display(game.getCurrentPlayerName(), game.getCurrentPlayerHand(), game.getCurrentPlayerScore());
-    }
-
     private static Direction getDirection(String d) {
         return switch (d) {
             case "l" -> Direction.LEFT;
@@ -236,9 +236,9 @@ public class App {
         };
     }
 
-    private static boolean isOneOfTheDirection(String direction) {
-        for (String s : DIRECTIONS) {
-            if (s.equals(direction.toLowerCase())) {
+    private static boolean isOneOfTheDirection(String enteredDirectionNickname) {
+        for (Direction direction : Direction.values()) {
+            if (direction.getNickname() == enteredDirectionNickname.toCharArray()[0]) {
                 return true;
             }
         }

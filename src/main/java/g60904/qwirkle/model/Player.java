@@ -51,9 +51,6 @@ public class Player implements Serializable {
     public int getScore() {
         return score;
     }
-    public void setScore(int score) {
-        this.score = score;
-    }
 
     /**
      * Refills the player's hand by adding new random tiles from the bag.

@@ -7,10 +7,11 @@ package g60904.qwirkle.model;
  * The columns decrease as you go down and the rows as you go to the left.
  */
 public enum Direction {
-    UP(-1, 0), DOWN(1, 0),
-    LEFT(0, -1), RIGHT(0, 1);
+    UP(-1, 0, 'u'), DOWN(1, 0, 'd'),
+    LEFT(0, -1, 'l'), RIGHT(0, 1, 'r');
     private final int deltaRow;
     private final int deltaCol;
+    private final char nickname;
 
     /**
      * Constructs a new Direction with the specified deltaRow and deltaCol.
@@ -18,9 +19,10 @@ public enum Direction {
      * @param row the deltaRow associated with this Direction
      * @param col the deltaCol associated with this Direction
      */
-    Direction(int row, int col) {
-        deltaRow = row;
-        deltaCol = col;
+    Direction(int row, int col, char nickname) {
+        this.deltaRow = row;
+        this.deltaCol = col;
+        this.nickname = nickname;
     }
 
     /**
@@ -47,6 +49,10 @@ public enum Direction {
      */
     public int getDeltaCol() {
         return deltaCol;
+    }
+
+    public char getNickname() {
+        return nickname;
     }
 
     /**

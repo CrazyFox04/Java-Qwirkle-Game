@@ -1,7 +1,5 @@
 package g60904.qwirkle.model;
 
-import g60904.qwirkle.view.View;
-
 import javax.swing.*;
 import java.io.*;
 import java.util.List;
@@ -15,29 +13,27 @@ public class Game implements Serializable {
      * The grid where tiles are placed.
      */
     private final Grid grid;
-    static final JFileChooser fc = new JFileChooser();
-
-    public List<Player> getPlayers() {
-        return List.of(players);
-    }
-
     /**
      * The array of players.
      */
     private final Player[] players;
+
     /**
      * The index of the current player.
      */
     private int currentPlayer;
-    private int numberOfPassInARow;
     private final Bag bag = Bag.getInstance();
-
+    private static final JFileChooser fc = new JFileChooser();
+    private static final int MAX_NUMBER_PLAYERS = 5;
     /**
      * Constructs a new Qwirkle game with the specified list of players.
      *
      * @param listOfPlayers the list of players to participate in the game
      */
     public Game(List<Player> listOfPlayers) {
+        if (listOfPlayers.size()>MAX_NUMBER_PLAYERS) {
+            throw new QwirkleException("You can't be more than " + MAX_NUMBER_PLAYERS + " players.");
+        }
         grid = new Grid();
         players = new Player[listOfPlayers.size()];
         for (int i = 0; i < listOfPlayers.size(); i++) {
@@ -78,6 +74,13 @@ public class Game implements Serializable {
         }
         return null;
     }
+
+    public List<Player> getPlayers() {
+        return List.of(players);
+    }
+    public static int getMaxNumberPlayers() {
+        return MAX_NUMBER_PLAYERS;
+    }
     public static void setBagInstanceAfterSerialization(Game game) {
         Bag.setInstance(game.bag);
     }
@@ -115,7 +118,6 @@ public class Game implements Serializable {
             players[currentPlayer].addScore(grid.firstAdd(d, getTileOfPlayer(is)));
             removeTileOfPlayer(is);
             pass();
-            numberOfPassInARow = 0;
         } catch (QwirkleException e) {
             throw new QwirkleException(e.getMessage());
         }
@@ -133,7 +135,6 @@ public class Game implements Serializable {
             players[currentPlayer].addScore(grid.add(row, col, players[currentPlayer].getHand().get(index)));
             removeTileOfPlayer(index);
             pass();
-            numberOfPassInARow = 0;
         } catch (QwirkleException e) {
             throw new QwirkleException(e.getMessage());
         }
@@ -152,7 +153,6 @@ public class Game implements Serializable {
             players[currentPlayer].addScore(grid.add(row, col, d, getTileOfPlayer(indexes)));
             removeTileOfPlayer(indexes);
             pass();
-            numberOfPassInARow = 0;
         } catch (QwirkleException e) {
             throw new QwirkleException(e.getMessage());
         }
@@ -174,7 +174,6 @@ public class Game implements Serializable {
             players[currentPlayer].addScore(grid.add(getTileAtPosOfPlayer(is)));
             removeTileOfPlayer(getTilesIndexes(is));
             pass();
-            numberOfPassInARow = 0;
         } catch (QwirkleException e) {
             throw new QwirkleException(e.getMessage());
         }
@@ -189,18 +188,11 @@ public class Game implements Serializable {
         players[currentPlayer].refill();
     }
 
-    public void incNumberOfPassInARow() {
-        numberOfPassInARow++;
-    }
-
     public boolean isOver() {
         if (players[getPreviousPlayer()].getHand().isEmpty() && isBagEmpty()) {
             players[getPreviousPlayer()].addScore(6);
             return true;
-        } else if (!atLeastOnePlayerCanPlay() && isBagEmpty()) {
-            return true;
-        }
-        return false;
+        } else return !atLeastOnePlayerCanPlay() && isBagEmpty();
     }
 
     private boolean atLeastOnePlayerCanPlay() {

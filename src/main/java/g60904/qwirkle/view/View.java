@@ -1,5 +1,6 @@
 package g60904.qwirkle.view;
 
+import g60904.qwirkle.model.Game;
 import g60904.qwirkle.model.GridView;
 import g60904.qwirkle.model.Player;
 import g60904.qwirkle.model.Tile;
@@ -100,17 +101,18 @@ public class View {
         List<Player> playerList = new ArrayList<>();
         System.out.print("How many players would like to play ? ");
         int n = 0;
-        while (n < 1) {
+        while (n < 1 || n > Game.getMaxNumberPlayers()) {
             n = lireEntier();
             if (n < 1) {
-                System.out.print("Please enter an integer greater than or equal to 1 : ");
+                System.out.print("Please enter an integer between 1 and " + Game.getMaxNumberPlayers());
             }
         }
         System.out.println();
         System.out.println("Enter the names of the players, press 'enter' to confirm the name of each player.");
         for (int i = 0; i < n; i++) {
             System.out.print("Player " + (i + 1) + " : ");
-            playerList.add(new Player(clavier.next()));
+            var playerName = clavier.nextLine();
+            playerList.add(new Player(playerName));
         }
         System.out.println();
         return playerList;
@@ -121,7 +123,9 @@ public class View {
             clavier.next();
             System.out.print("Please enter an integer greater than or equal to 1 : ");
         }
-        return clavier.nextInt();
+        var result = clavier.nextInt();
+        clavier.nextLine();
+        return result;
     }
 
     public static void displayWelcome() {
@@ -154,7 +158,6 @@ public class View {
         return answer.equals("y");
     }
     public static boolean playerWantToSaveAGame() {
-        clavier = new Scanner(System.in);
         System.out.print("Do you want to save the game to restore it later ? (y/n) ");
         String answer = clavier.nextLine();
         answer = answer.toLowerCase();
@@ -166,10 +169,10 @@ public class View {
         System.out.println();
         return answer.equals("y");
     }
-    public static void askToSaveTheGame() {
-        System.out.println("Do you want to save the game to restore it later ?");
-    }
-    public static void serializationIsOk() {
-        System.out.println("Saving OK");
+    public static String getCommand() {
+        System.out.print("Command : ");
+        String command = clavier.nextLine();
+        command = command.toLowerCase();
+        return command;
     }
 }
