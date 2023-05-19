@@ -270,12 +270,7 @@ public class Game implements Serializable {
      * @return true if the bag is empty, false otherwise
      */
     private boolean isBagEmpty() {
-        for (Player player : players) {
-            if (player.getHand().size() < 6) {
-                return true;
-            }
-        }
-        return false;
+        return bag.size()==0;
     }
 
     /**
