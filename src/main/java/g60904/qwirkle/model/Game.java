@@ -30,7 +30,7 @@ public class Game implements Serializable {
      * @param playersNameList the list of players to participate in the game
      * @throws QwirkleException if the number of players exceeds the maximum limit
      */
-    public Game(List<String> playersNameList) {
+    public Game(List<String> playersNameList) throws QwirkleException {
         if (playersNameList.size()>MAX_NUMBER_PLAYERS) {
             throw new QwirkleException("You can't be more than " + MAX_NUMBER_PLAYERS + " players.");
         }
@@ -48,7 +48,7 @@ public class Game implements Serializable {
      * @return true if the write operation is successful, false otherwise
      * @throws QwirkleException if there is an error while writing the file
      */
-    public boolean write() {
+    public boolean write() throws QwirkleException {
         int returnVal = fc.showSaveDialog(null);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = fc.getSelectedFile();
@@ -69,7 +69,7 @@ public class Game implements Serializable {
      * @return the Game object read from the file
      * @throws QwirkleException if there is an error while reading the file
      */
-    public static Game getFromFile() {
+    public static Game getFromFile() throws QwirkleException {
         int returnVal = fc.showOpenDialog(null);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = fc.getSelectedFile();
@@ -210,7 +210,7 @@ public class Game implements Serializable {
      * @throws QwirkleException if the tiles cannot be played because they do not form a valid qwirkle
      *                          or do not match the tiles already on the grid.
      */
-    public void play(int... is) {
+    public void play(int... is) throws QwirkleException {
         try {
             players[currentPlayer].addScore(grid.add(getTileAtPosOfPlayer(is)));
             removeTileOfPlayer(getTilesIndexes(is));

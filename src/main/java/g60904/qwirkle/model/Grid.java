@@ -40,7 +40,7 @@ public class Grid implements Serializable {
      * @throws QwirkleException if the grid is not empty or if the added
      *                          Tiles do not comply with the Qwirkle game rules.
      */
-    public int firstAdd(Direction d, Tile... line) {
+    public int firstAdd(Direction d, Tile... line) throws QwirkleException {
         if (!isEmpty) {
             throw new QwirkleException("This method can only be called when the Grid is empty.");
         }
@@ -115,7 +115,7 @@ public class Grid implements Serializable {
      * @throws QwirkleException if any of the tiles cannot be placed on the board or
      *                          if a position already contains a tile
      */
-    public int add(int row, int col, Direction d, Tile... line) {
+    public int add(int row, int col, Direction d, Tile... line) throws QwirkleException {
         if (isEmpty()) {
             throw new QwirkleException("You need to use first add to do the first move");
         }
@@ -136,7 +136,7 @@ public class Grid implements Serializable {
      * @throws QwirkleException if a tile cannot be added to the specified position on the game board.
      */
 
-    public int add(TileAtPosition... line) {
+    public int add(TileAtPosition... line) throws QwirkleException {
         if (isEmpty()) {
             throw new QwirkleException("You need to use first add to do the first move");
         }

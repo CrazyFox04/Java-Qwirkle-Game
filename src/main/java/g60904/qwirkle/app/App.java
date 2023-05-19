@@ -4,7 +4,6 @@ import g60904.qwirkle.model.*;
 import g60904.qwirkle.view.View;
 
 import java.util.List;
-import java.util.Scanner;
 
 public class App {
     private static Game game;
@@ -54,10 +53,14 @@ public class App {
      * If the player doesn't want to save the game, it displays the end-of-game message and terminates the application.
      */
     private static void quit() {
-        boolean askQuestionAgain;
+        boolean askQuestionAgain = true;
         do {
             if (View.playerWantToSaveAGame()) {
-                askQuestionAgain = !game.write();
+                try {
+                    askQuestionAgain = !game.write();
+                } catch (QwirkleException e) {
+                    View.displayError(e.getMessage());
+                }
             } else {
                 askQuestionAgain = false;
                 View.displayEnd(game.getPlayersName(), game.getPlayersScore());
@@ -76,7 +79,11 @@ public class App {
         Game serializedGame = null;
         while (serializedGame == null) {
             if (View.playerWantToLoadAGame()) {
-                serializedGame = Game.getFromFile();
+                try {
+                    serializedGame = Game.getFromFile();
+                } catch (QwirkleException e) {
+                    View.displayError(e.getMessage());
+                }
             } else {
                 return false;
             }
