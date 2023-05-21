@@ -183,7 +183,7 @@ public class App {
             int sizeOfHand = game.getCurrentPlayerHand().size();
             for (int i = firstPos; i < command.length; i++) {
                 var pos = Integer.parseInt(command[i]);
-                if (pos > sizeOfHand || pos < 0) {
+                if (pos >= sizeOfHand || pos < 0) {
                     return false;
                 }
             }
