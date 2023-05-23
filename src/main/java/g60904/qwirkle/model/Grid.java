@@ -505,8 +505,8 @@ public class Grid implements Serializable {
         var QwirklePoints = 0;
         for (Direction direction : Direction.values()) {
             accoladeTiles.addAll(getTilesAtPosInDirection(row, col, direction, 0));
-            if (getTilesInDirection(row, col, direction, 0).size() == 6) {
-                QwirklePoints += 6;
+            if (getTilesInDirection(row, col, direction, 0).size() == 7) {
+                QwirklePoints += 7;
             }
         }
         return accoladeTiles.size() + QwirklePoints + additionalPointsCausedByTile(row, col);
@@ -534,8 +534,8 @@ public class Grid implements Serializable {
             actualCol += d.getDeltaCol();
         }
         for (Direction direction : Direction.values()) {
-            if (getTilesInDirection(row, col, direction, 0).size() == 6) {
-                QwirklePoints += 6;
+            if (getTilesInDirection(row, col, direction, 0).size() == 7) {
+                QwirklePoints += 7;
             }
         }
         return accoladeTiles.size() + QwirklePoints + additionalPointsCausedByTiles(row, col, d, numberOfTilesPlaced);
@@ -557,8 +557,8 @@ public class Grid implements Serializable {
             }
             additionalPoints += additionalPointsCausedByTile(tile.row(), tile.col());
             for (Direction direction : Direction.values()) {
-                if (getTilesInDirection(tile.row(), tile.col(), direction, 0).size() == 6) {
-                    QwirklePoints += 6;
+                if (getTilesInDirection(tile.row(), tile.col(), direction, 0).size() == 7) {
+                    QwirklePoints += 7;
                 }
             }
         }

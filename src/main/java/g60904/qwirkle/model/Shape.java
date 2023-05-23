@@ -6,7 +6,7 @@ package g60904.qwirkle.model;
  * @see Tile
  */
 public enum Shape {
-    CROSS, SQUARE, ROUND, STAR, PLUS, DIAMOND;
+    CROSS, SQUARE, ROUND, STAR, PLUS, DIAMOND, TRIANGLE;
     /**
      * Returns a string representation of the shape.
      * The string representation corresponds to the symbol associated with the shape.
@@ -22,6 +22,7 @@ public enum Shape {
             case STAR -> "*";
             case PLUS -> "+";
             case DIAMOND -> "♦";
+            case TRIANGLE -> "▲";
         };
     }
 }

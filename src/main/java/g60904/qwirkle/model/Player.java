@@ -60,7 +60,7 @@ public class Player implements Serializable {
      * Refills the player's hand by adding new random tiles from the bag.
      */
     public void refill() {
-        var array = Bag.getInstance().getRandomTiles(-(tiles.size() - 6));
+        var array = Bag.getInstance().getRandomTiles(-(tiles.size() - 7));
         for (Tile tile : array) {
             if (tile != null) {
                 tiles.add(tile);

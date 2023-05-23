@@ -235,7 +235,7 @@ public class Game implements Serializable {
      */
     public boolean isOver() {
         if (players[getPreviousPlayer()].getHand().isEmpty() && isBagEmpty()) {
-            players[getPreviousPlayer()].addScore(6);
+            players[getPreviousPlayer()].addScore(7);
             return true;
         } else return !atLeastOnePlayerCanPlay() && isBagEmpty();
     }

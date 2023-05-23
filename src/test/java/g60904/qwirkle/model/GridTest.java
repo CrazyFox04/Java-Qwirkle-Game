@@ -1062,4 +1062,29 @@ class GridTest {
         myGrid.add(47, 43, new Tile(Color.BLUE, Shape.STAR));
         assertEquals(4, myGrid.add(new TileAtPosition(46,43, new Tile(Color.BLUE, Shape.CROSS))));
     }
+
+    @Test
+    @Tag("defense")
+    @DisplayName("Points - firstAdd - Add 7 tiles - QWIRKLE")
+    void points_Qwirkle7_defense_color() {
+        var listOfTilesToAdd = new Tile[7];
+        int numberOfTilesAdded = 0;
+        for (Color color : Color.values()) {
+            listOfTilesToAdd[numberOfTilesAdded] = new Tile(color, Shape.STAR);
+            numberOfTilesAdded++;
+        }
+        assertEquals(14, myGrid.firstAdd(Direction.UP, listOfTilesToAdd));
+    }
+    @Test
+    @Tag("defense")
+    @DisplayName("Points - firstAdd - Add 7 tiles - QWIRKLE")
+    void points_Qwirkle7_defense_shape() {
+        var listOfTilesToAdd = new Tile[7];
+        int numberOfTilesAdded = 0;
+        for (Shape shape : Shape.values()) {
+            listOfTilesToAdd[numberOfTilesAdded] = new Tile(Color.BLUE, shape);
+            numberOfTilesAdded++;
+        }
+        assertEquals(14, myGrid.firstAdd(Direction.UP, listOfTilesToAdd));
+    }
 }
